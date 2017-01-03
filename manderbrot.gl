@@ -1,0 +1,118 @@
+class Mandelbrot {
+
+   public static int mandelbrot(final double size) {
+     int sum = 0;
+
+     int byte_acc = 0;
+     int bit_num  = 0;
+
+     int y = 0;
+     while (y < size) {
+       double ci = (2.0 * y / size) - 1.0;
+
+       int x = 0;
+       while (x < size) {
+         double zr   = 0.0;
+         double zrzr = 0.0;
+         double zi   = 0.0;
+         double zizi = 0.0;
+         double cr = (2.0 * x / size) - 1.5;
+
+         int z = 0;
+         int escape = 1;
+
+         while (z < 50) {
+           double tr = zrzr - zizi + cr;
+           double ti = 2.0 * zr * zi + ci;
+
+           zr = tr;
+           zi = ti;
+
+           // preserve recalculation
+           zrzr = zr*zr;
+           zizi = zi*zi;
+           if (zrzr + zizi > 4.0) {
+             escape = 0;
+             break;
+           }
+           z += 1;
+         }
+
+         byte_acc = (byte_acc << 1) | escape;
+         bit_num += 1;
+
+         // Code is very similar for these cases, but using separate blocks
+         // ensures we skip the shifting when it's unnecessary, which is most cases.
+         if (bit_num == 8) {
+           sum ^= byte_acc;
+           byte_acc = 0;
+           bit_num  = 0;
+         } else if (x == size - 1) {
+           byte_acc <<= (8 - bit_num);
+           sum ^= byte_acc;
+           byte_acc = 0;
+           bit_num  = 0;
+         }
+         x += 1;
+       }
+       y += 1;
+     }
+     return sum;
+   }
+
+   public static void warmup() {
+      for (int n = 0; n < 10000; n++) {
+         mandelbrot(10);
+      }
+   }
+
+   public static boolean sample() {
+      return mandelbrot(750) == 192;
+   }
+
+   public static void main(final String[] args) {
+      if (!sample()) {
+          throw new RuntimeException();
+      }
+
+      int iterations = 100;
+      int warmup     = 0;
+      int problemSize = 1000;
+
+
+      if (args.length >= 1) {
+          iterations = Integer.parseInt(args[0]);
+      }
+
+      if (args.length >= 2) {
+          warmup = Integer.parseInt(args[1]);
+      }
+
+      if (args.length >= 3) {
+          problemSize = Integer.parseInt(args[2]);
+      }
+
+      System.out.println("Overall iterations: " + iterations);
+      System.out.println("Warmup  iterations: " + warmup);
+      System.out.println("Problem size:       " + problemSize);
+
+      while (warmup > 0) {
+        mandelbrot(problemSize);
+        warmup--;
+      }
+
+      while (iterations > 0) {
+         long start = System.nanoTime();
+         mandelbrot(problemSize);
+         long elapsed = (System.nanoTime() - start) / 1000;
+         iterations--;
+
+         System.out.println("Mandelbrot: iterations=1 runtime: " +
+             elapsed + "us");
+      }
+
+      if (!sample()) {
+        throw new RuntimeException();
+      }
+   }
+}
