@@ -1,0 +1,75 @@
+<%@params doc %>
+<%@import org.eclipse.golo.doc.AbstractProcessor %>
+<%
+let CONFIG = com.github.rjeschke.txtmark.Configuration.builder()
+  : forceExtentedProfile()
+  : build()
+%>
+# Documentation for `<%= doc: moduleName() %>`
+<%= adaptSections(doc: moduleDocumentation(), 1) %>
+<% if not doc: structs(): isEmpty() { %>
+## Structs
+<% foreach structDoc in doc: structs() { %>
+### `<%= structDoc: name() %>`
+
+##### Members
+<% foreach member in structDoc: members() { %>
+- <%= member %>
+<%}%>
+<%= adaptSections(structDoc: documentation(), 3) %>
+<%}}%>
+<% if not doc: unions(): isEmpty() { %>
+## Unions
+<% foreach unionDoc in doc: unions() { %>
+### `<%= unionDoc: name() %>`
+<%= adaptSections(unionDoc: documentation(), 3) %>
+<% foreach unionValueDoc in unionDoc: values() { %>
+#### `<%= unionValueDoc: name() %>`
+<% foreach member in unionValueDoc: members() { %>
+- <%= member %>
+<%}%>
+<%= adaptSections(unionValueDoc: documentation(), 3) %>
+<%}%>
+<%}%>
+<%}%>
+<%if not doc: namedAugmentations(): isEmpty() {%>
+## Named Augmentations
+<%foreach namedAugmentationDoc in doc: namedAugmentations() {%>
+### <%= namedAugmentationDoc: name()%>
+<%= adaptSections(namedAugmentationDoc: documentation(), 3) %>
+<%foreach funcDoc in namedAugmentationDoc {%>
+<%if funcDoc: varargs() {%>
+#### <%=funcDoc: name() %>(<%= funcDoc: arguments(): join(", ")%>...)
+<%} else {%>
+#### <%=funcDoc: name() %>(<%= funcDoc: arguments(): join(", ")%>)
+<%}%>
+<%= adaptSections(funcDoc: documentation(), 4) %>
+<%}}}%>
+<% if not doc: augmentations(): isEmpty() { %>
+## Augmentations
+<% foreach augmentDoc in doc: augmentations() { %>
+### `<%= augmentDoc: target() %>`
+<%= adaptSections(augmentDoc: documentation(), 3) %>
+<%if not augmentDoc: augmentationNames(): isEmpty() {%>
+##### Named augmentations applied
+<%foreach name in augmentDoc: augmentationNames() {%>
+- <%= name %>
+<%}}%>
+<% foreach funcDoc in augmentDoc { %>
+<%if funcDoc: varargs() {%>
+#### `<%= funcDoc: name() %>(<%= funcDoc: arguments(): join(", ") %>...)`
+<%} else {%>
+#### `<%= funcDoc: name() %>(<%= funcDoc: arguments(): join(", ") %>)`
+<%}%>
+<%= adaptSections(funcDoc: documentation(), 4) %>
+<% }}} %>
+<% if not doc: functions(): isEmpty() { %>
+## Functions
+<% foreach funcDoc in doc: functions() { %>
+<%if funcDoc: varargs() {%>
+#### `<%= funcDoc: name() %>(<%= funcDoc: arguments(): join(", ") %>...)`
+<%} else {%>
+#### `<%= funcDoc: name() %>(<%= funcDoc: arguments(): join(", ") %>)`
+<%}%>
+<%= adaptSections(funcDoc: documentation(), 3) %>
+<%}}%>

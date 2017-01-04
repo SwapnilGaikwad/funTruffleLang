@@ -1,0 +1,15 @@
+plugins {
+    id 'org.golo-lang.golo' version '@gradle-plugin.version@'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    golo 'org.eclipse.golo:golo:@golo.version@'
+}
+
+golo {
+    mainModule = '{{projectName}}'
+}

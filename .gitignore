@@ -1,0 +1,17 @@
+target/
+*.ipr
+*.iml
+*.iws
+.idea/
+dependency-reduced-pom.xml
+*.swp
+*.vim
+.benchmarks.h2.db
+benchmarks/*.json
+benchmarks/*.html
+doc/output/
+tags
+build/
+.gradle/
+/.nb-gradle/
+src/main/generated

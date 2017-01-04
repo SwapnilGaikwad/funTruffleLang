@@ -1,0 +1,900 @@
+== Basics
+
+Let us start with the Golo basics.
+
+=== Editor / IDE support
+
+Editor and IDE support for Golo is available for:
+
+- https://github.com/jponge/vim-golo[Vim]
+- https://github.com/k33g/sublime-golo[Sublime Text 2 & 3]
+- https://github.com/k33g/golo-storm[IntelliJ IDEA (syntax highthing)]
+- https://github.com/golo-lang/gldt[Eclipse] (initially contributed by Jeff Maury, currently outdated and seeking for new contributors)
+- https://github.com/golo-lang/golo-netbeans[Netbeans] (contributed by http://www.serli.com/[Serli])
+- https://atom.io/packages/golo-ide[Atom] (package golo-ide)
+- https://github.com/zyedidia/micro[Micro] (Gololang support for Micro is native)
+
+=== Hello world
+
+Golo source code need to be placed in _modules_. Module names are
+separated with dots, as in:
+
+[source,golo]
+----
+Foo
+foo.Bar
+foo.bar.Baz
+(...)
+----
+
+It is suggested yet not enforced that the first elements in a module
+name are in lowercase, and that the last one have an uppercase first
+letter.
+
+A Golo module can be executable if it has a _function_ named `main` and
+that takes an argument for the JVM program arguments:
+
+[source,golo]
+----
+module hello.World
+
+function main = |args| {
+  println("Hello world!")
+}
+----
+
+`println` is a predefined function that outputs a value to the standard
+console. As you can easily guess, here we output `Hello, world!` and
+that is an awesome achievement.
+
+NOTE: Newlines are important in Golo, so make sure that your editor ends files with a newline.
+
+NOTE: Golo identifiers can be non-ascii characters (e.g., Japanese, Emoji, Arabic, etc).
+
+=== Running _"Hello world"_
+
+Of course, we need to run this incredibly complex application.
+
+Golo comes with a `golo` script found in the distribution `bin/` folder. It provides several
+commands, notably:
+
+- `version` to query the Golo version, and
+- `compile` to compile some Golo code to JVM classes, and
+- `run` to execute some already compiled Golo code, and
+- `golo` to directly execute Golo code from source files, and
+- `diagnose` to print compiler internal diagnosis information, and
+- `check` to check code for compilation errors (e.g. as an editor hook), and
+- `doc` to generate module(s) documentation, and
+- `new` to generate new project(s).
+
+The complete commands usage instructions can be listed by running `golo --help`.
+A command usage instructions can be listed by running `golo --usage ${command}`.
+
+IMPORTANT: The `golo` script comes with JVM tuning settings that may not be appropriate to your
+environment. We also provide a `vanilla-golo` script with no tuning. You may use the `$JAVA_OPTS`
+environment variable to provide custom JVM tuning to `vanilla-golo`.
+
+Provided that `golo` is available from your current `$PATH`, you may run the program above as
+follows:
+
+[source]
+----
+$ golo golo --files samples/helloworld.golo
+Hello world!
+$ golo golo --files samples/ --module hello.World
+Hello world!
+$
+----
+
+`golo golo` takes several Golo source files (*.golo and directories) as input.
+It expects the last one to have a `main` function to call (or use
+`--module` to define the golo module with the `main` function).
+The Golo code is compiled on the fly and executed straight into a JVM.
+
+You may also pass arguments to the `main` function by appending `--args`
+on the command line invocation. Suppose that we have a module `EchoArgs`
+as follows:
+
+[source,golo]
+----
+module EchoArgs
+
+function main = |args| {
+  foreach arg in args {
+    println("->  " + arg)
+  }
+}
+----
+
+We may invoke it as follows:
+
+[source]
+----
+$ golo golo --files samples/echo-args.golo --args plop da plop
+-> plop
+-> da
+-> plop
+$
+----
+
+Note that `args` is expected to be an array.
+
+Finally, the `--classpath` flag allows to specify a list of classpath elements, which can be either
+directories or `.jar` files. See the `golo help` command for details on the various Golo commands.
+
+=== Compiling Golo source code
+
+Golo comes with a compiler that generates JVM bytecode in `.class` files. We will give more details
+in the chapter on interoperability with Java.
+
+Compiling Golo files is straightforward:
+
+[source]
+----
+$ golo compile --output classes samples/helloworld.golo
+$
+----
+
+This compiles the code found in `samples/helloworld.golo` and outputs
+the generated classes to a `classes` folder (it will be created if
+needed):
+
+[source]
+----
+$ tree classes/
+classes/
+└── hello
+    └── World.class
+
+1 directory, 1 file
+$
+----
+
+It is also possible to output to a Jar archive:
+
+[source]
+----
+golo compile --output hello.jar samples/*.golo
+----
+
+This would take all `.golo` files from the `sample` folder, and assemble the resulting JVM class files in `hello.jar`.
+
+=== Running compiled Golo code
+
+Golo provides a `golo` command for running compiled Golo code:
+
+[source]
+----
+$ cd classes
+$ golo run --module hello.World
+Hello world!
+$
+----
+
+Simple, isn't it?
+
+=== Running Golo script
+
+Golo provides a `shebang` command for running a Golo file as a simple script.
+
+[source,golo]
+----
+module hello
+
+function main = |args| {
+  require(args: length() > 1, "You should set at least one argument!")
+  println("Hello " + args: get(1) + " from '" + args: get(0) + "'!")
+}
+----
+
+the script above can be executed with:
+
+[source]
+----
+$ golo shebang hello.golo World
+Hello World from 'hello.golo'!
+$
+----
+
+Naturally the main goal is to use this command to make the script self-executable:
+
+[source,golo]
+----
+#!/path/to/golo shebang
+module hello
+
+function main = |args| {
+  require(args: length() > 1, "You should set at least one argument!")
+  println("Hello " + args: get(1) + " from '" + args: get(0) + "'!")
+}
+----
+
+Now, we can run the script directly:
+
+----
+$ chmod +x hello.golo
+$ ./hello.golo World
+Hello World from 'hello.golo'!
+$
+----
+
+NOTE: Golo also provides `golosh` script that is a shortcut for the `golo shebang` command, thus
+a golo script can be hasbanged with `env`:
+
+[source,golo]
+----
+#!/usr/bin/env golosh
+module hello
+
+function main = |args| {
+  require(args: length() > 1, "You should set at least one argument!")
+  println("Hello " + args: get(1) + " from '" + args: get(0) + "'!")
+}
+----
+
+NOTE: Each `golo` and `jar` files present in the script file's directory or the sub directories will be scanned.
+This makes it easy to run scripts and have an automatic classpath for libraries, and automatically compile and load other Golo files.
+
+[source]
+----
+$ tree ./
+./
+└── libs
+    └── libA.jar
+    └── libB.jar
+└── commons
+    └── utils.golo
+    └── others.golo
+    └── vendors
+        └── otherlib.jar
+└── hello.golo
+└── library.golo
+$
+----
+
+=== Passing JVM-specific flags
+
+Both `golo` and `run` commands can be given JVM-specific flags using the `JAVA_OPTS` environment
+variable.
+
+As an example, the following runs `fibonacci.golo` and prints JIT compilation along the way:
+
+[source]
+----
+# Exporting an environment variable
+$ export JAVA_OPTS=-XX:+PrintCompilation
+$ golo golo --files samples/fibonacci.golo
+
+# ...or you may use this one-liner
+$ JAVA_OPTS=-XX:+PrintCompilation golo golo --files samples/fibonacci.golo
+----
+
+=== Bash autocompletion
+
+A bash script can be found in `share/shell-completion/` called `golo-bash-completion` that will provide autocomplete support for the `golo` and `vanilla-golo` CLI scripts. You may either `source` the script, or drop the script into your `bash_completion.d/` folder and restart your terminal.
+
+TIP: Not sure where your `bash_completion.d/` folder is? Try `/etc/bash_completion.d/` on Linux or `/usr/local/etc/bash_completion.d/` for Mac Homebrew users.
+
+=== Zsh autocompletion
+
+A zsh script can be found in `share/shell-completion/` called `golo-zsh-completion` that works using the `golo-bash-completion` to provide autocomplete support using the bash autocomplete support provided by zsh. Place both files into the same directory and `source golo-zsh-completion` from your terminal or `.zshrc` to give it a try!
+
+=== Comments
+
+Golo comments start with a `#`, just like in Bash, Python or Ruby:
+
+[source,golo]
+----
+# This is a comment
+println("Plop") # it works here, too
+----
+
+=== Variable and constant references
+
+Golo does not check for types at compile time, and they are not declared. Everything happens at
+runtime in Golo.
+
+Variables are declared using the `var` keyword, while constant references are declared with `let`.
+It is strongly advised that you favour `let` over `var` unless you are certain that you need
+mutability.
+
+Variables and constants need to be initialized when declared. Failing to do so results in a
+compilation error.
+
+Here are a few examples:
+
+[source,golo]
+----
+# Ok
+var i = 3
+i = i + 1
+
+# The assignment fails because truth is a constant
+let truth = 42
+truth = 666
+
+# Invalid statement, variables / constants have to be initialized
+var foo
+----
+
+Valid names contain upper and lower case letters within the `[a..z]` range, underscores (`_`),
+dollar symbols (`$`) and numbers. In any case, an identifier must not start with a number.
+
+[source,golo]
+----
+# Ok, but not necessarily great for humans...
+let _$_f_o_$$666 = 666
+
+# Wrong!
+let 666_club = 666
+----
+
+=== Data literals
+
+Golo supports a set of data literals. They directly map to their counterparts from the Java Standard
+API. We give them along with examples in <<data-literals,the data literals table>> below.
+
+[options="header",id="data-literals"]
+|===
+|Java type | Golo literals
+
+|`null` | `null`
+
+|`java.lang.Boolean` | `true` or `false`
+
+|`java.lang.String` | `"hello world"`
+
+|`java.lang.Character` | `'a'`, `'b'`, ...
+
+|`java.lang.Integer` | `123`, `-123`, `1_234`, ...
+
+|`java.lang.Long` | `123_L`, `-123_L`, `1_234_L`, ...
+
+|`java.lang.Double` | `1.234`, `-1.234`, `1.234e9`, ...
+
+|`java.lang.Float` | `1.234_F`, `-1.234_F`, `1.234e9_F`, ...
+
+|`java.math.BigInteger` | `1_B`, `-42_B`, `1_234_B`, ...
+
+|`java.math.BigDecimal` | `1.0_B`, `-1_234.56_B`, `1.234e-4_B`, ...
+
+|`java.lang.Class` | `String.class`, `java.lang.String.class`, `gololang.Predef.module`, `byte.class`, ...
+
+| `gololang.FunctionReference` | `^foo`, `^some.module::foo`, ...
+
+|===
+
+Speaking of strings, Golo also supports multi-line strings using the `"""` delimiters, as in:
+
+[source,golo]
+----
+let text = """This is
+a multi-line string.
+  How
+    cool
+      is
+        that?"""
+
+println(text)
+----
+
+This snippet would print the following to the standard console output:
+
+----
+This is
+a multi-line string.
+  How
+    cool
+      is
+        that?
+----
+
+=== Collection literals
+
+Golo support special support for common collections. The syntax uses brackets prefixed by a
+collection name, as in:
+
+[source,golo]
+----
+let s = set[1, 2, "a", "b"]
+let v = vector[1, 2, 3]
+let m = map[[1, "a"], [2, "b"]]
+# (...)
+----
+
+The syntax and type matchings are the following:
+
+[options="header",id="collection-literals-matching"]
+|===
+|Collection |Java type |Syntax
+
+|Tuple|
+`gololang.Tuple`|
+`tuple[1, 2, 3]`, or simply `[1, 2, 3]`
+
+|Array|
+`java.lang.Object[]`|
+`array[1, 2, 3]`
+
+|List|
+`java.util.LinkedList`|
+`list[1, 2, 3]`
+
+|Vector|
+`java.util.ArrayList`|
+`vector[1, 2, 3]`
+
+|Set|
+`java.util.LinkedHashSet`|
+`set[1, 2, 3]`
+
+|Map|
+`java.util.LinkedHashMap`|
+`map[[1, "a"], [2, "b"]]`
+
+|Range|
+`gololang.Range`|
+`[1..10]`, `['a'..'f']`
+
+|===
+
+
+==== A note on lists
+
+Since in Golo, every value is actually an instance of `Object`, there is no
+overloading, and thus the `remove` method on lists can't be used to remove an
+element at a given position. If you want to remove a list element given its
+position, use the `removeAt` method.
+
+==== A note on tuples
+
+Tuples essentially behave as immutable arrays.
+
+The `gololang.Tuple` class provides the following methods:
+
+- a constructor with a variable-arguments list of values,
+- a `get(index)` method to get the element at a specified index,
+- a `head()` method to get the first element,
+- a `tail()` method returning a copy without the first element,
+- `size()` and `isEmpty()` methods that do what their names suggest,
+- an `iterator()` method because tuples are iterable, and
+- `equals(other)`, `hashCode()` and `toString()` do just what you would expect.
+
+==== A note on maps
+
+The map collection literal expects entries to be specified as tuples where the first entry is the
+key, and the second entry is the value. This allows nested structures to be specified as in:
+
+[source,golo]
+----
+map[
+  ["foo", "bar"],
+  ["plop", set[1, 2, 3, 4, 5]],
+  ["mrbean", map[
+    ["name", "Mr Bean"],
+    ["email", "bean@outlook.com"]
+  ]]
+]
+----
+
+There are a few rules to observe:
+
+- not providing a series of tuples will yield class cast exceptions,
+- tuples must have at least 2 entries or will yield index bound exceptions,
+- tuples with more than 2 entries are ok, but only the first 2 entries matter.
+
+Because of that, the following code compiles but raises exceptions at runtime:
+
+[source,golo]
+----
+let m1 = map[1, 2, 4, 5]
+let m2 = map[
+  [1],
+  ["a", "b"]
+]
+----
+
+The rationale for map literals to be loose is that we let you put any valid Golo expression, like
+functions returning valid tuples:
+
+[source,golo]
+----
+let a = -> [1, 'a']
+let b = -> [2, 'b']
+let m = map[a(), b()]
+----
+
+=== Collection comprehension
+
+In addition to literals, collections can be created using collection
+comprehension. This is a simple way to create a new collection based on another
+one (actually on any iterable object), by filtering and transforming its
+content. For instance:
+[source,golo]
+----
+let l1 = list[1, 2, 3, 4, 5, 6]
+let l2 = list[x * 2 foreach x in l1 when (x % 2) == 0]
+# l2 == list[4, 8, 12]
+----
+
+This is a more readable and more powerful version of `filter`+`map`. The
+previous example could be rewritten as
+[source,golo]
+----
+let l2 = l2: filter(|x| -> (x % 2) == 0): map(|x| -> x * 2)
+----
+
+The general syntax is a collection literal containing an expression followed
+by one or more loop-like expression. If more than one loop is given, it is
+equivalent to nested loops. Thus
+[source,golo]
+----
+let l = list[ [x, y] foreach x in [1..4] foreach y in ["a", "b", "c"] ]
+----
+
+is equivalent to:
+[source,golo]
+----
+let l = list[]
+foreach x in [1..4] {
+  foreach y in ["a", "b", "c"] {
+    l: add([x, y])
+  }
+}
+----
+
+`for` loop can be used, as in
+[source,golo]
+----
+let l = list[ 3 * i + 1 for (var i=0, i < 10, i = i + 2) ]
+----
+
+Contrary to the `filter`+`map` approach, where the kind on collection is kept,
+comprehension can transform the source collection type, which can be any
+iterable. For instance:
+[source,golo]
+----
+let dices = set[ x + y foreach x in [1..7] foreach y in [1..7]]
+# dices == set[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+----
+
+However, the result collection can only be of the type of one of the predefined
+collection literal types.
+
+xref:_destructuring[Destructuring] can also be used in collection
+comprehension, as in
+[source,golo]
+----
+let couples = [ [1, 2], [2, 3], [3, 4] ]
+let sums = [ a + b foreach a, b in couples ]
+----
+
+Maps can also be created, provided the given expression is either a pair tuple or
+a instance of `Map.Entry` (you can use the predefined `mapEntry(key, value)`
+function to create such objects). For instance:
+[source,golo]
+----
+let myMap = map[ ["key" + i, 2 * i] foreach i in [0..4] ]
+# myMap is {key0=0, key1=2, key2=4, key3=6}
+----
+
+A collection comprehension is a expression, and can thus be used as such. E.g.
+[source,golo]
+----
+foreach v in [[x,x] foreach x in [0..3]] {
+  println(v)
+}
+----
+
+The analogy can be made between comprehension and SQL queries. As an
+illustration, compare:
+[source,sql]
+----
+select distinct
+    p.name, p.age, c.product
+from
+    persons as p,
+    commands as c
+where p.id == c.customer
+      and p.age > 18
+----
+with
+[source,golo]
+----
+let result = set[
+  [p: name(), p: age(), c: product()]
+  foreach p in persons
+  foreach c in commands
+  when p: id() == c: customer()
+       and p: age() > 18
+]
+----
+
+
+==== Collection comprehension vs. `map` and `filter`
+
+Collection comprehension is actually quite similar to using `map` and `filter`
+higher-order function on a collection. Indeed, a comprehension such as:
+[source,golo]
+----
+list[f(x) foreach x in aList when pred(x)]
+----
+is equivalent to
+[source,golo]
+----
+aList: filter(^pred): map(^f)
+----
+
+Thus, should you use collection comprehension or higher-order functions? Despite some
+implementation differences, it's above all a matter of taste. Some people
+consider comprehension more readable, since it is more similar to the
+mathematical https://en.wikipedia.org/wiki/Set-builder_notation[set-builder notation].
+As an example, compare the two functionally equivalent expressions:
+[source,golo]
+----
+list[ 2 * x for x in aList when (x % 2) == 0 ]
+aList: filter(x -> (x % 2) == 0): map(x -> 2 * x)
+----
+
+The more powerful expressiveness of comprehension shines when using nested
+iterators or xref:_destructuring[destructuring]. For instance, an expression such as
+[source,golo]
+----
+list[ k + ": " + (x * v)
+    foreach x in [1..10] when (x % 2) == 1
+    foreach k, v in aMap:entrySet() when k: startsWith("f") or v >= 42]
+----
+
+would be cumbersome to write using only `map` and `filter`.
+
+The comprehension approach has also several advantages. First, while the code
+executed is almost identical when mapping a function and using a comprehension,
+that is something similar to
+[source,golo]
+----
+let tmp = list[]
+foreach elt in aList {
+  tmp: add(f(elt))
+}
+return tmp
+----
+
+the comprehension code is generated at compile time, whereas the `map`
+application is a function called at runtime.
+As such, when using a filtering clause, the use of `filter` creates an
+intermediate list that will be fed to `map`. This is not the case with
+comprehension. Moreover, since the expression used to build the values of the
+new collection is used at compile time, no closure is created, neither for the
+filter.
+
+An other advantage of comprehension is the fact that it can be used with any
+iterable, to build a different kind of collection. The `map` and `filter` methods are
+not (yet) available for any iterable, and for those that have them, the
+result collection is of the same type as the initial one. This approach is more
+polymorphic, but can be less readable if you need to change the collection type.
+
+
+=== Destructuring
+
+Golo supports simple destructuring, that is automatic extraction of values
+from an object and assignment to multiple variables in one instruction.
+
+For instance, using destructuring on a tuple:
+[source,golo]
+----
+let a, b = [1, 2]
+# a = 1, b = 2
+----
+
+If there are more variables than values, an exception is raised. If there are
+fewer, the remaining values are ignored. A special syntax is available to
+assign the rest of the values, similar to varargs notation. For instance:
+
+[source,golo]
+----
+let a, b, c = [1, 2]               # raises an exception
+let a, b = [1, 2, 3]               # a = 1, b = 2, 3 ignored
+let a, b, c... = [1, 2, 3, 4, 5]   # a = 1, b = 2, c = [3, 4, 5]
+----
+
+Any object having a `destruct()` method returning a tuple can be used in
+destructuring assignments. Golo specific data structures and some Java native
+ones (arrays, maps, collections) can be destructured. Augmentations can be used to make an existing class
+destructurable.
+
+For instance, xref:_structs[golo structures] are destructurable:
+[source,golo]
+----
+struct Point = {x, y}
+#...
+let p = Point(42, 1337)
+let x, y = p   # x = 42, y = 1337
+----
+
+as well as java lists:
+[source,golo]
+----
+let lst = list[1, 2, 3, 4, 5]
+let head, tail... = lst        # head = 1, tail = [2, 3, 4, 5]
+----
+
+Already defined variables can also be assigned with destructuring. For
+instance, one can easily swap two variables:
+[source,golo]
+----
+var a, b = [1, 2]  # a = 1, b = 2
+a, b = [b, a]      # a = 2, b = 1
+----
+
+Destucturing can also be used in
+xref:_span_class_monospaced_foreach_span_loops[`foreach` loops]:
+[source,golo]
+----
+foreach key, value in myMap: entrySet() {
+  # do something...
+}
+----
+
+=== Operators
+
+Golo supports the following <<operators,set of operators>>.
+
+[options="header",id="operators"]
+|===
+|Symbol(s) |Description |Examples
+
+|`+`|
+Addition on numbers and strings.|
+`1 + 2` gives `3`.
+
+`"foo" + "bar"` gives `"foobar"`.
+
+`"foo" + something` where `something` is any object instance is equivalent to
+`"foo" + something.toString()` in Java.
+
+|`-`|
+Subtraction on numbers.|
+`4 - 1` gives `3`.
+
+|`*`|
+Multiplication on numbers and strings.|
+`2 * 2` gives `4`.
+
+`"a" * 3` gives `"aaa"`.
+
+|`/`|
+Division on numbers.|
+`4 / 2` gives `2`.
+
+|'%'|
+Modulo on numbers.|
+`4 % 2` gives `0`, `3 % 2` gives `1`.
+
+|`"<"`, `"<="`, `"=="`, `"!="`, `">"`, `">="`|
+Comparison between numbers and objects that implement `java.lang.Comparable`.
+`==` is equivalent to calling `Object#equals(Object)` in Java.|
+`1 < 2` gives `true`.
+
+|`is`, `isnt`|
+Comparison of reference equality.|
+`a is b` gives `true` only if `a` and `b` reference the same object instance.
+
+|`and`, `or`, `not`|
+Boolean operators. `not` is of course a unary operator.|
+`true and true` gives `true`, `not(true)` gives `false`.
+
+|`oftype`|
+Checks the type of an object instance, equivalent to the `instanceof` operator
+in Java.|
+`("plop" oftype String.class)` gives `true`.
+
+|`orIfNull`|
+Evaluates an expression and returns the value of another one if `null`.|
+`null orIfNull "a"` gives `"a"`. `foo() orIfNull 0` gives the value of calling `foo()`, or `0` if
+`foo()` returns `null`.
+
+|===
+
+NOTE: The algebraic operators can be used with any numeric type having a literal notation
+(see <<data-literals,the data literals table>> ), including `java.math.BigInteger` and `java.math.BigDecimal`.
+
+The operator precedence rules are as follows:
+
+[options="header",id="operator-precedence"]
+|===
+|Precedence |Operator
+|Strongest  | `:`, `?:`
+|           |`not`
+|           |`*`, `/`, `%`
+|           |`+`, `-`
+|           |`<`, `<=`, `>`, `>=`, `oftype`
+|           |`==`, `!=`, `is`, `isnt`
+|           |`and`
+|           |`or`
+|Lowest     |`orIfNull`
+|===
+
+This means that:
+
+[source,golo]
+----
+not foo: bar() orIfNull "yo"
+----
+
+reads as:
+
+[source,golo]
+----
+(not (foo: bar())) orIfNull "yo"
+----
+
+=== Calling a method
+
+Although we will discuss this in more details later on, you should already know that `:` is used to
+invoke instance methods.
+
+You could for instance call the `toString()` method that any Java object has, and print it out as
+follows:
+
+[source,golo]
+----
+println(123: toString())
+println(someObject: toString())
+----
+
+=== Java / JVM arrays
+
+As you probably know, arrays on the JVM are special objects. Golo deals with such arrays as being
+instances of `Object[]` and does not provide a wrapper class like many languages do. A Java / JVM
+array is just what it is supposed to be.
+
+Golo adds some sugar to relieve the pain of working with arrays. Golo allows some special methods to
+be invoked on arrays:
+
+- `get(index)` returns the value at `index`,
+- `set(index, value)` sets `value` at `index`,
+- `length()` and `size()` return the array length,
+- `iterator()` returns a `java.util.Iterator`,
+- `toString()` delegates to `java.util.Arrays.toString(Object[])`,
+- `asList()` delegates to `java.util.Arrays.asList(Object[])`,
+- `equals(someArray)` delegates to `java.util.Arrays.equals(this, someArray)`,
+- `getClass()` returns the array class,
+- `head()` returns the first element of the array (or `null` if empty),
+- `tail()` returns a copy of the array without its first element (or an empty
+  array if empty),
+- `isEmpty()` checks if the array is empty.
+
+Given a reference `a` on some array:
+
+[source,golo]
+----
+# Gets the element at index 0
+a: get(0)
+
+# Replaces the element at index 1 with "a"
+a: set(1, "a")
+
+# Nice print
+println(a: toString())
+
+# Convert to a real collection
+let list = a: asList()
+----
+
+WARNING: The methods above do **not** perform array bound checks.
+
+Finally, arrays can be created with the `Array` function, as in:
+
+[source,golo]
+----
+let a = Array(1, 2, 3, 4)
+let b = Array("a", "b")
+----
+
+You can of course take advantage of the `array` collection literal, too:
+
+[source,golo]
+----
+let a = array[1, 2, 3, 4]
+let b = array["a", "b"]
+----
