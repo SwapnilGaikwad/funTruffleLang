@@ -189,6 +189,8 @@ TOKEN :
   |
   < ADDITIVE_OPERATOR: ("+" | "-") >
   |
+  < BIT_OPERATOR: ( "bitOR" | "bitLSHIFT" | "bitXOR" ) >
+  |
   < RELATIONAL_OPERATOR: ("<" | "<=" | ">" | ">=" | "oftype") >
   |
   < EQUALITY_OPERATOR: ("==" | "!=" | "is" | "isnt") >
@@ -1163,6 +1165,20 @@ void InvocationExpression() #void:
       anon.setOnExpression(true);
     }
   )*
+}
+
+void BitExpression() #void:
+{
+  Token token = null;
+}
+{
+  UnaryExpression()
+  (
+    LOOKAHEAD(2) (BlankLine())? token=<BIT_OPERATOR> (BlankLine())? InvocationExpression()
+    {
+      jjtThis.addOperator(token.image);
+    }
+  )* #BitExpression(token != null)
 }
 
 void MultiplicativeExpression() #void:

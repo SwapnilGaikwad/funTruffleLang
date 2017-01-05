@@ -248,6 +248,18 @@ public final class OperatorSupport {
   public static Object moreorequals(Integer a, Integer b) {
     return ((int) a) >= ((int) b);
   }
+  
+  public static Object bit_lshift(final Integer a, final Integer b) {
+    return a << b;
+  }
+
+  public static Object bit_or(final Integer a, final Integer b) {
+    return a | b;
+  }
+
+  public static Object bit_xor(final Integer a, final Integer b) {
+    return a ^ b;
+  }
 
   public static Object plus(Long a, Long b) {
     return ((long) a) + ((long) b);
@@ -2140,6 +2152,8 @@ public final class OperatorSupport {
   public static Object modulo(Double a, BigInteger b) {
     return (new BigDecimal(a)).remainder(new BigDecimal(b));
   }
+
+  
 
   // END GENERATED
 
