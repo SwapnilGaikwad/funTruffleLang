@@ -794,6 +794,27 @@ public class ParseTreeToGoloIrVisitor implements GoloParserVisitor {
   }
 
   @Override
+  public Object visit(ASTBitExpression node, Object data) {
+    Context context = (Context) data;
+    node.childrenAccept(this, context);
+    BinaryOperation current = null;
+    ExpressionStatement left;
+    ExpressionStatement right = null;
+    List<String> symbols = node.getOperators();
+    Collections.reverse(symbols);
+    for (String symbol : symbols) {
+      if (right == null) {
+        right = (ExpressionStatement) context.objectStack.pop();
+      }
+      left = (ExpressionStatement) context.objectStack.pop();
+      right = current = new BinaryOperation(OperatorType.fromString(symbol), left, right);
+    }
+    context.objectStack.push(current);
+    node.setIrElement(current);
+    return data;
+  }
+
+  @Override
   public Object visit(ASTAdditiveExpression node, Object data) {
     Context context = (Context) data;
     node.childrenAccept(this, context);
