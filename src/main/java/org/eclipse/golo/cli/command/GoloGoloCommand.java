@@ -36,6 +36,9 @@ public class GoloGoloCommand implements CliCommand {
   @Parameter(names = "--classpath", variableArity = true, description = "Classpath elements (.jar and directories)")
   List<String> classpath = new LinkedList<>();
 
+  @Parameter(names = "--truffle", description = "Uses Truffle for execution")
+  boolean truffle = false;
+
   @Override
   public void execute() throws Throwable {
     URLClassLoader primaryClassLoader = primaryClassLoader(this.classpath);
@@ -73,9 +76,13 @@ public class GoloGoloCommand implements CliCommand {
       }
     } else if (file.getName().endsWith(".golo")) {
       try (FileInputStream in = new FileInputStream(file)) {
-        Class<?> loadedClass = loader.load(file.getName(), in);
-        if (module == null || loadedClass.getCanonicalName().equals(module)) {
-          return loadedClass;
+        if(truffle) {
+	  System.out.println("Run truffle option..");
+        } else {
+          Class<?> loadedClass = loader.load(file.getName(), in);
+          if (module == null || loadedClass.getCanonicalName().equals(module)) {
+            return loadedClass;
+          }
         }
       } catch (GoloCompilationException e) {
         handleCompilationException(e);
