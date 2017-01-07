@@ -14,6 +14,9 @@ import com.beust.jcommander.Parameters;
 import org.eclipse.golo.cli.command.spi.CliCommand;
 import org.eclipse.golo.compiler.GoloClassLoader;
 import org.eclipse.golo.compiler.GoloCompilationException;
+import com.oracle.truffle.api.Truffle;
+import gololang.truffle.Function;
+import org.eclipse.golo.compiler
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,7 +80,10 @@ public class GoloGoloCommand implements CliCommand {
     } else if (file.getName().endsWith(".golo")) {
       try (FileInputStream in = new FileInputStream(file)) {
         if(truffle) {
-	  System.out.println("Run truffle option..");
+	  GoloCompiler compiler = new GoloCompiler();
+          Function fun = compiler.compileAndGetMain(file.getName(), in);
+          Truffle.getRuntime().createCallTarget(fun).call(new Object[] {new String[0]});
+	  System.exit(0);
         } else {
           Class<?> loadedClass = loader.load(file.getName(), in);
           if (module == null || loadedClass.getCanonicalName().equals(module)) {

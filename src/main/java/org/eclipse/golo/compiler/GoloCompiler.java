@@ -14,6 +14,7 @@ import org.eclipse.golo.compiler.parser.ASTCompilationUnit;
 import org.eclipse.golo.compiler.parser.GoloOffsetParser;
 import org.eclipse.golo.compiler.parser.GoloParser;
 import org.eclipse.golo.compiler.parser.ParseException;
+import gololang.truffle.Function;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -97,12 +98,29 @@ public class GoloCompiler {
    * @throws GoloCompilationException if a problem occurs during any phase of the compilation work.
    */
   public final List<CodeGenerationResult> compile(String goloSourceFilename, InputStream sourceCodeInputStream) throws GoloCompilationException {
-    resetExceptionBuilder();
-    ASTCompilationUnit compilationUnit = parse(goloSourceFilename, initParser(goloSourceFilename, sourceCodeInputStream));
-    GoloModule goloModule = check(compilationUnit);
+    GoloModule goloModule = compileToGoloModule(goloSourceFilename, sourceCodeInputStream);
     JavaBytecodeGenerationGoloIrVisitor bytecodeGenerator = new JavaBytecodeGenerationGoloIrVisitor();
     return bytecodeGenerator.generateBytecode(goloModule, goloSourceFilename);
   }
+
+  public final Function compileAndGetMain(String goloSourceFilename, InputStream sourceCodeInputStream) throws GoloCompilationException {
+    GoloModule goloModule = compileToGoloModule(goloSourceFilename, sourceCodeInputStream);
+    TruffleGenerationGoloIrVisitor truffleGenerator = new TruffleGenerationGoloIrVisitor();
+    truffleGenerator.generateRepresentation(goloModule);
+    for (Function fun : goloModule.getTruffleFunctions()){
+       if (fun.getFunction().isMain()) {
+         return fun;
+       }
+    }
+    return null;
+  }
+
+private GoloModule compileToGoloModule(String goloSourceFilename, InputStream sourceCodeInputStream) {
+    resetExceptionBuilder();
+    ASTCompilationUnit compilationUnit = parse(goloSourceFilename, initParser(goloSourceFilename, sourceCodeInputStream));
+    GoloModule goloModule = check(compilationUnit);
+    return goloModule;
+}
 
   private void throwIfErrorEncountered() {
     if (!getProblems().isEmpty()) {
