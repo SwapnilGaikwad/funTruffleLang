@@ -21,11 +21,15 @@ plugins {
   id 'org.asciidoctor.convert' version '1.5.3'
   id 'net.nemerosa.versioning' version '2.5.1'
   id 'com.github.ben-manes.versions' version '0.13.0'
+  id "net.ltgt.apt" version "0.3"
 }
 
 // .................................................................................................................. //
 
 repositories {
+  maven {
+    url "http://lafo.ssw.uni-linz.ac.at/nexus/content/repositories/releases/"
+  }
   jcenter()
 }
 
@@ -87,6 +91,10 @@ dependencies {
   compile 'com.beust:jcommander:1.60'
   compile 'com.github.rjeschke:txtmark:0.13'
   compile 'com.googlecode.json-simple:json-simple:1.1.1'
+
+  compile 'com.oracle.truffle:truffle-api:0.9'
+  apt     'com.oracle.truffle:truffle-api:0.9'
+  apt     'com.oracle.truffle:truffle-dsl-processor:0.9'
 
   testCompile 'org.ow2.asm:asm-util:5.1'
   testCompile 'org.ow2.asm:asm-analysis:5.1'
