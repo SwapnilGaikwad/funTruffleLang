@@ -1,2 +1,2 @@
-
-### Test langugage implementation using Truffle for experimentation
+### Coconut
+Test langugage implementation using Truffle for experimentation.
