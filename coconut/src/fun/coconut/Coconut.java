@@ -1,6 +1,10 @@
 package fun.coconut;
 
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.source.Source;
 
 public class Coconut extends TruffleLanguage<Coconut>{
 
@@ -31,5 +35,19 @@ public class Coconut extends TruffleLanguage<Coconut>{
 
 	public static void main(String[] args) {
 		System.out.println("Hello from coconut!");
+	}
+
+	@Override
+	protected Object evalInContext(Source source, Node node,
+			MaterializedFrame mFrame) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected CallTarget parse(Source code, Node context,
+			String... argumentNames) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
