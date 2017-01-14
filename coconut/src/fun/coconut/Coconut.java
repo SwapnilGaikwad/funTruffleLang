@@ -5,7 +5,9 @@ import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.vm.PolyglotEngine;
 
+@TruffleLanguage.Registration(name = "Coconut", version = "0.1", mimeType = "application/coconut")
 public class Coconut extends TruffleLanguage<Coconut>{
 
 	@Override
@@ -33,10 +35,6 @@ public class Coconut extends TruffleLanguage<Coconut>{
 		return false;
 	}
 
-	public static void main(String[] args) {
-		System.out.println("Hello from coconut!");
-	}
-
 	@Override
 	protected Object evalInContext(Source source, Node node,
 			MaterializedFrame mFrame) throws Exception {
@@ -49,5 +47,11 @@ public class Coconut extends TruffleLanguage<Coconut>{
 			String... argumentNames) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public static void main(String[] args) {
+		PolyglotEngine pe = PolyglotEngine.newBuilder().build();
+		assert pe.getLanguages().containsKey("application/coconut");
+		System.out.println("Hello from coconut!");
 	}
 }
