@@ -9,62 +9,70 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.nodes.Node;
-import com.oracle.truffle.api.source.MissingMIMETypeException;
-import com.oracle.truffle.api.source.MissingNameException;
 import com.oracle.truffle.api.source.Source;
-import com.oracle.truffle.api.source.Source.Builder;
 import com.oracle.truffle.api.vm.PolyglotEngine;
 
-@TruffleLanguage.Registration(name = "Coconut", version = "0.1", mimeType = "application/coconut")
+@TruffleLanguage.Registration(name = "Coconut", version = "0.1", mimeType = Coconut.MIME_TYPE)
 public class Coconut extends TruffleLanguage<Coconut>{
+
+	public static final String MIME_TYPE = "application/x-coconut";
+
+	public static final Coconut INSTANCE = new Coconut();
+
+	private Coconut() {
+		//No instance apart from singleton INSTANCE
+	}
 
 	@Override
 	protected Coconut createContext(Env env) {
-		// TODO Auto-generated method stub
+		System.out.println("Create context...");
 		return null;
 	}
 
 	@Override
 	protected Object findExportedSymbol(Coconut context, String globalName,
 			boolean onlyExplicit) {
-		// TODO Auto-generated method stub
+		System.out.println("Find exported symbols");
 		return null;
 	}
 
 	@Override
 	protected Object getLanguageGlobal(Coconut context) {
-		// TODO Auto-generated method stub
+		System.out.println("Get language global");
 		return null;
 	}
 
 	@Override
 	protected boolean isObjectOfLanguage(Object object) {
-		// TODO Auto-generated method stub
+		System.out.println("In isObjectOfLanguage");
 		return false;
 	}
 
 	@Override
 	protected Object evalInContext(Source source, Node node,
 			MaterializedFrame mFrame) throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("In evaluInContext");
 		return null;
 	}
 
 	@Override
 	protected CallTarget parse(Source code, Node context,
 			String... argumentNames) throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("In parse method...");
 		return null;
 	}
 
 	public static void main(String[] args) {
-		PolyglotEngine pe = PolyglotEngine.newBuilder().build();
-		assert pe.getLanguages().containsKey("application/coconut");
+		PolyglotEngine engine = PolyglotEngine.newBuilder().setIn(System.in).setOut(System.out).build();
+		System.out.println("Size: " + engine.getLanguages().size());
+		assert engine.getLanguages().containsKey(Coconut.MIME_TYPE);
+
 		System.out.println("Hello from coconut!");
 		if(args.length < 1){
 			System.err.println("No input file is provied!");
 			return;
 		}
+
 		String inputFileName = args[0];
 		InputStreamReader isr = null;
 		try {
@@ -74,14 +82,16 @@ public class Coconut extends TruffleLanguage<Coconut>{
 			System.err.println(e);
 			return;
 		}
+
 		Source source = null;
 		try {
-			source = Source.newBuilder(isr).name("coconutBuilder").mimeType("application/coconut").build();
+			source = Source.newBuilder(isr).name("coconutBuilder").mimeType(Coconut.MIME_TYPE).build();
 		} catch (IOException | RuntimeException e) {
 			System.err.println("Error while converting to source object");
 			System.err.println(e);
 			return;
 		}
-		pe.eval(source);
+
+		engine.eval(source);
 	}
 }
