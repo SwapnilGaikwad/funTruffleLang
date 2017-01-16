@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.vm.PolyglotEngine;
 
@@ -61,7 +64,16 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 	protected CallTarget parse(Source code, Node context,
 			String... argumentNames) throws Exception {
 		System.out.println("In parse method...");
-		return null;
+		
+		RootNode rootNode = new RootNode(Coconut.class, null, null) {
+			
+			@Override
+			public Object execute(VirtualFrame frame) {
+				System.out.println("In execute method of RootNode in Coconut class...");
+				return null;
+			}
+		};
+		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
 
 	public static void main(String[] args) {
