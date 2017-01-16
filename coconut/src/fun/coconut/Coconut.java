@@ -12,8 +12,10 @@ import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.vm.PolyglotEngine;
 
-@TruffleLanguage.Registration(name = "Coconut", version = "0.1", mimeType = Coconut.MIME_TYPE)
-public class Coconut extends TruffleLanguage<Coconut>{
+import fun.coconut.runtime.CoconutContext;
+
+@TruffleLanguage.Registration(name = "coconut", version = "0.1", mimeType = Coconut.MIME_TYPE)
+public class Coconut extends TruffleLanguage<CoconutContext>{
 
 	public static final String MIME_TYPE = "application/x-coconut";
 
@@ -24,20 +26,20 @@ public class Coconut extends TruffleLanguage<Coconut>{
 	}
 
 	@Override
-	protected Coconut createContext(Env env) {
+	protected CoconutContext createContext(Env env) {
 		System.out.println("Create context...");
 		return null;
 	}
 
 	@Override
-	protected Object findExportedSymbol(Coconut context, String globalName,
-			boolean onlyExplicit) {
+	protected Object findExportedSymbol(CoconutContext context,
+			String globalName, boolean onlyExplicit) {
 		System.out.println("Find exported symbols");
 		return null;
 	}
 
 	@Override
-	protected Object getLanguageGlobal(Coconut context) {
+	protected Object getLanguageGlobal(CoconutContext context) {
 		System.out.println("Get language global");
 		return null;
 	}
