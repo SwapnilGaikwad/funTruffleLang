@@ -4,3 +4,5 @@
 .classpath
 .factorypath
 /src_gen/
+src/fun/coconut/parser/Scanner.java*
+src/fun/coconut/parser/Parser.java*
