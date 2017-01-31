@@ -9,6 +9,30 @@
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.5.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<!-- <mainClass>java</mainClass> -->
+							<executable>java</executable>
+							<arguments>
+								<argument>-jar</argument>
+								<argument>external_jars/Coco.jar</argument>
+								<argument>src/fun/coconut/parser/coconut.atg</argument>
+								<argument>-package</argument>
+								<argument>fun.coconut.parser</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
@@ -40,6 +64,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.oracle.truffle</groupId>
