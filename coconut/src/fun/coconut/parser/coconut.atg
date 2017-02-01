@@ -10,26 +10,8 @@ IGNORE "\n"
 PRODUCTIONS
    Coconut			(. int n; .)
    = { "Coconut"
-        AddExpr <out n>		(. System.out.println(n); .)
+        basicBlocks 		(. System.out.println(n); .)
      }.
 
-   AddExpr <out int n>		(. int n1; .)
-   = MulExpr <out n>
-     { 
-       AddExpr <out n1>		(. n = n + n1; .)
-     }.
-
-   MulExpr <out int n>		(. int n1; .)
-   = Term <out n>
-     {
-      '*' MulExpr <out n1>      (. n = n * n1; .)
-     |
-      '/' MulExpr <out n1>      (. n = n / n1; .)
-     }.
-
-   Term <out int n>		(. n=0; .)
-   = ['+'] number		(. n = Integer.parseInt(t.val); .)
-   | '-' number			(. n = Integer.parseInt("-" + t.val); .)
-   .
 
 END Coconut.
