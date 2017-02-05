@@ -28,7 +28,7 @@ PRODUCTIONS
    instr
    = term.
 
-   term
+   term <out int n>    (. n=0; .)
    = ['+'] number      (. System.out.println("Positive Number: " + t.val); .)
     | '-' number       (. System.out.println("Negative Number: " + t.val); .)
     .

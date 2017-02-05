@@ -15,6 +15,8 @@ import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.vm.PolyglotEngine;
 
+import fun.coconut.parser.Parser;
+import fun.coconut.parser.Scanner;
 import fun.coconut.runtime.CoconutContext;
 
 @TruffleLanguage.Registration(name = "coconut", version = "0.1", mimeType = Coconut.MIME_TYPE)
@@ -64,6 +66,9 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 	protected CallTarget parse(Source code, Node context,
 			String... argumentNames) throws Exception {
 		System.out.println("In parse method...");
+		Scanner scanner = new Scanner("/home/sgaikwad/sandbox/compiler/funTruffleLang/coconut/input.cnut");
+		Parser parser = new Parser(scanner);
+		parser.Parse();
 		
 		RootNode rootNode = new RootNode(Coconut.class, null, null) {
 			
