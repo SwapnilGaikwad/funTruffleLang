@@ -9,28 +9,26 @@ TOKENS
 IGNORE "\n"
 PRODUCTIONS
    Coconut
-   = { "Coconut"
-        basicBlocks
-     }.
-
-   basicBlocks
    = basicBlock
      {
-       basicBlocks
+        basicBlock
      }.
 
    basicBlock
-   = {
-       instr
-     }
-     term.
+   = instr ";"
+     {
+       instr ";"
+     }.
 
-   instr
-   = term.
+   instr			(. int n1, n2; .)
+   = value <out n1>
+     {
+       '+' value <out n2>	(. System.out.println("Sum of " + n1 + " and " + n2); .)
+     }.
 
-   term <out int n>    (. n=0; .)
-   = ['+'] number      (. System.out.println("Positive Number: " + t.val); .)
-    | '-' number       (. System.out.println("Negative Number: " + t.val); .)
+   value <out int n>   (. n = 0; .)
+   = ['+'] number      (. n = Integer.parseInt(t.val); System.out.println("Positive Number: " + n); .)
+    | '-' number       (. n = Integer.parseInt(t.val) * -1; System.out.println("Negative Number: " + n); .)
     .
 
 END Coconut.
