@@ -274,6 +274,7 @@ class StartStates {
 //-----------------------------------------------------------------------------------
 // Scanner
 //-----------------------------------------------------------------------------------
+@SuppressWarnings("rawtypes")
 public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
