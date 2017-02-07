@@ -20,11 +20,15 @@ PRODUCTIONS
        instr ";"
      }.
 
-   instr			(. int n1, n2; .)
+   instr			(. int n1, n2; String str; .)
    = value <out n1>
      {
-       '+' value <out n2>	(. System.out.println("Sum of " + n1 + " and " + n2); .)
+       op <out str> value <out n2>	(. System.out.println( n1 + " '" + str + "' " + n2); .)
      }.
+
+   op <out String o>
+   = ( '+' | '-' | '*' | '%' | '/' )	(. o = t.val; .)
+   .
 
    value <out int n>   (. n = 0; .)
    = ['+'] number      (. n = Integer.parseInt(t.val); System.out.println("Positive Number: " + n); .)
