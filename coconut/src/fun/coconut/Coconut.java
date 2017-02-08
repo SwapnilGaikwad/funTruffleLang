@@ -66,7 +66,7 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 	protected CallTarget parse(Source code, Node context,
 			String... argumentNames) throws Exception {
 		System.out.println("In parse method...");
-		Scanner scanner = new Scanner("/home/sgaikwad/sandbox/compiler/funTruffleLang/coconut/input.cnut");
+		Scanner scanner = new Scanner(code.getInputStream());
 		Parser parser = new Parser(scanner);
 		parser.Parse();
 		
