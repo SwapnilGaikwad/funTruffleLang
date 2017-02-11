@@ -9,7 +9,6 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
@@ -68,16 +67,8 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 		System.out.println("In parse method...");
 		Scanner scanner = new Scanner(code.getInputStream());
 		Parser parser = new Parser(scanner);
-		parser.Parse();
-		
-		RootNode rootNode = new RootNode(Coconut.class, null, null) {
-			
-			@Override
-			public Object execute(VirtualFrame frame) {
-				System.out.println("In execute method of RootNode in Coconut class...");
-				return null;
-			}
-		};
+		RootNode rootNode = parser.Parse();
+
 		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
 
