@@ -1,19 +1,21 @@
 package fun.coconut;
 
-import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.nodes.RootNode;
+
+import fun.coconut.nodes.CoconutDummyExpressionNode;
+import fun.coconut.nodes.CoconutRootNode;
 
 public class CoconutASTGenerator {
 
-	public RootNode generateAST(){
-		RootNode rootNode = new RootNode(Coconut.class, null, null) {
+	FrameDescriptor frameDescriptor;
 
-			@Override
-			public Object execute(VirtualFrame frame) {
-				System.out.println("In execute method of RootNode in CoconutASTGenerator class...");
-				return null;
-			}
-		};
+	public CoconutASTGenerator(){
+		frameDescriptor = new FrameDescriptor();
+	}
+
+	public RootNode generateAST(){
+		RootNode rootNode = new CoconutRootNode(Coconut.class, null, frameDescriptor, new CoconutDummyExpressionNode());
 		return rootNode;
 	}
 }

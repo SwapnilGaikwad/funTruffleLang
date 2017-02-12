@@ -11,7 +11,7 @@ public class CoconutRootNode extends RootNode {
 
 	@Child CoconutExpressionNode expressionNode;
 
-	protected CoconutRootNode(Class<Coconut> language, SourceSection sourceSection,
+	public CoconutRootNode(Class<Coconut> language, SourceSection sourceSection,
 			FrameDescriptor frameDescriptor, CoconutExpressionNode expressionNode) {
 		super(language, sourceSection, frameDescriptor);
 		this.expressionNode = expressionNode;
@@ -20,8 +20,7 @@ public class CoconutRootNode extends RootNode {
 	@Override
 	public Object execute(VirtualFrame frame) {
 		System.out.println("In execute method of CoconutRootNode...");
-		return null;
+		return expressionNode.executeGeneric(frame);
 	}
-
 
 }
