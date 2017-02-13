@@ -10,10 +10,10 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.nodes.Node;
-import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.vm.PolyglotEngine;
 
+import fun.coconut.nodes.CoconutRootNode;
 import fun.coconut.parser.Parser;
 import fun.coconut.parser.Scanner;
 import fun.coconut.runtime.CoconutContext;
@@ -67,7 +67,7 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 		System.out.println("In parse method...");
 		Scanner scanner = new Scanner(code.getInputStream());
 		Parser parser = new Parser(scanner);
-		RootNode rootNode = parser.Parse();
+		CoconutRootNode rootNode = parser.Parse();
 
 		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
