@@ -23,7 +23,7 @@ PRODUCTIONS
    instr			(. int n1, n2; String str; .)
    = value <out n1>
      {
-       op <out str> value <out n2>	(. System.out.println( n1 + " '" + str + "' " + n2); .)
+       op <out str> value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
      }.
 
    op <out String o>
