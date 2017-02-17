@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;
 
-import fun.coconut.nodes.CoconutAddNodeGen;
 import fun.coconut.nodes.CoconutDummyExpressionNode;
 import fun.coconut.nodes.CoconutExpressionNode;
 import fun.coconut.nodes.CoconutInt32NodeGen;
 import fun.coconut.nodes.CoconutRootNode;
 import fun.coconut.nodes.CoconutUnimplementedOperationNode;
+import fun.coconut.nodes.arithmetic.CoconutAddNodeGen;
 
 public class CoconutASTGenerator {
 
