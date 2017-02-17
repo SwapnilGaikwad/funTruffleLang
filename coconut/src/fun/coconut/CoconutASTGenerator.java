@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;
 
+import fun.coconut.nodes.CoconutBlockNode;
 import fun.coconut.nodes.CoconutDummyExpressionNode;
 import fun.coconut.nodes.CoconutExpressionNode;
 import fun.coconut.nodes.CoconutRootNode;
@@ -56,11 +57,7 @@ public class CoconutASTGenerator {
 
 	public CoconutRootNode generateAST(){
 		//TODO: Create block of instructions and pass to root node to execute
-		CoconutExpressionNode node = new CoconutDummyExpressionNode();
-		if( instructionList.size() > 0){
-			//Temporary node for testing
-			node = instructionList.get(0);
-		}
+		CoconutExpressionNode node = new CoconutBlockNode(instructionList);
 		CoconutRootNode rootNode = new CoconutRootNode(Coconut.class, null, frameDescriptor, node);
 		return rootNode;
 	}
