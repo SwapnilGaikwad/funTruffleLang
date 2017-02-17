@@ -1,6 +1,8 @@
-package fun.coconut.nodes;
+package fun.coconut.nodes.literals;
 
 import com.oracle.truffle.api.dsl.Specialization;
+
+import fun.coconut.nodes.CoconutExpressionNode;
 
 public abstract class CoconutInt32Node extends CoconutExpressionNode{
 
