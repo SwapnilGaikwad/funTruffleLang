@@ -31,8 +31,8 @@ PRODUCTIONS
    .
 
    value <out int n>   (. n = 0; .)
-   = ['+'] number      (. n = Integer.parseInt(t.val); System.out.println("Positive Number: " + n); .)
-    | '-' number       (. n = Integer.parseInt(t.val) * -1; System.out.println("Negative Number: " + n); .)
+   = ['+'] number      (. n = Integer.parseInt(t.val); .)
+    | '-' number       (. n = Integer.parseInt(t.val) * -1; .)
     .
 
 END Coconut.

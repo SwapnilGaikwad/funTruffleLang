@@ -12,6 +12,7 @@ import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.vm.PolyglotEngine;
+import com.oracle.truffle.api.vm.PolyglotEngine.Value;
 
 import fun.coconut.nodes.CoconutRootNode;
 import fun.coconut.parser.Parser;
@@ -102,6 +103,7 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 			return;
 		}
 
-		engine.eval(source);
+		Value value = engine.eval(source);
+		System.out.println("Return value is : " + value.get());
 	}
 }
