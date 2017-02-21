@@ -26,8 +26,16 @@ PRODUCTIONS
        op <out str> value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
      }.
 
-   op <out String o>
-   = ( '+' | '-' | '*' | '%' | '/' | "<<" | ">>" )	(. o = t.val; .)
+   op <out String o>	(. o = null; .)
+   =  ( arithOp <out o> | shiftOp <out o> )
+   .
+
+   arithOp <out String o>
+   = ( '+' | '-' | '*' | '%' | '/' )  (. o = t.val; .)
+   .
+
+   shiftOp <out String o>
+   = ( "<<" | ">>" )		(. o = t.val; .)
    .
 
    value <out int n>   (. n = 0; .)
