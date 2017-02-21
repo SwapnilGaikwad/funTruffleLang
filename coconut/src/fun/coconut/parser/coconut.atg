@@ -27,7 +27,7 @@ PRODUCTIONS
      }.
 
    op <out String o>
-   = ( '+' | '-' | '*' | '%' | '/' )	(. o = t.val; .)
+   = ( '+' | '-' | '*' | '%' | '/' | "<<" | ">>" )	(. o = t.val; .)
    .
 
    value <out int n>   (. n = 0; .)

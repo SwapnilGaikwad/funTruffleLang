@@ -11,8 +11,10 @@ import fun.coconut.nodes.CoconutRootNode;
 import fun.coconut.nodes.CoconutUnimplementedOperationNode;
 import fun.coconut.nodes.arithmetic.CoconutAddNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutDivNodeGen;
+import fun.coconut.nodes.arithmetic.CoconutLShiftNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutModNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutMulNodeGen;
+import fun.coconut.nodes.arithmetic.CoconutRShiftNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutSubNodeGen;
 import fun.coconut.nodes.literals.CoconutInt32NodeGen;
 
@@ -46,6 +48,12 @@ public class CoconutASTGenerator {
 			break;
 		case "%" :
 			result = CoconutModNodeGen.create(lhsNode, rhsNode);
+			break;
+		case "<<":
+			result = CoconutLShiftNodeGen.create(lhsNode, rhsNode);
+			break;
+		case ">>":
+			result = CoconutRShiftNodeGen.create(lhsNode, rhsNode);
 			break;
 		default :
 			result = new CoconutUnimplementedOperationNode();
