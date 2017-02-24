@@ -4,12 +4,12 @@ import java.util.List;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-public class CoconutBlockNode extends CoconutExpressionNode{
+public class CoconutBlockNode extends CoconutExpressionNode {
 
-	List<CoconutExpressionNode> nodeList;
+	@Children private final CoconutExpressionNode[] nodeList;
 
 	public CoconutBlockNode(List<CoconutExpressionNode> nodeList) {
-		this.nodeList = nodeList;
+		this.nodeList = nodeList.toArray(new CoconutExpressionNode[0]);
 	}
 
 	@Override
