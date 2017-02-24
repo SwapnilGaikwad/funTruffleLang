@@ -5,6 +5,7 @@ CHARACTERS
 
 TOKENS
     number = digit{digit}.
+    float = digit{digit}'.'{digit}.
 
 IGNORE "\n"
 PRODUCTIONS
@@ -20,10 +21,14 @@ PRODUCTIONS
        instr ";"
      }.
 
-   instr			(. int n1, n2; String str; .)
+   instr			(. int n1, n2; float n3; String str; .)
    = value <out n1>
      {
-       op <out str> value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
+       op <out str> {
+	       floatValue <out n3>	(. astGenerator.createBinaryInstruction(str, n1, (int) n3); .)
+	       |
+	       value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
+	    }
      }.
 
    op <out String o>	(. o = null; .)
@@ -43,4 +48,8 @@ PRODUCTIONS
     | '-' number       (. n = Integer.parseInt(t.val) * -1; .)
     .
 
+    floatValue <out float n>	(. n = 0.0f; .)
+    = ['+'] float		(. n = Float.parseFloat(t.val); .)
+      | '-' float		(. n = Float.parseFloat(t.val) * -1; .)
+    .
 END Coconut.
