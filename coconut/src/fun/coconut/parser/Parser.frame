@@ -29,11 +29,14 @@ Coco/R itself) does not fall under the GNU General Public License.
 import fun.coconut.nodes.CoconutRootNode;
 import fun.coconut.CoconutASTGenerator;
 
+import com.oracle.truffle.api.frame.FrameDescriptor;
+
 public class Parser {
 -->constants
 	static final boolean _T = true;
 	static final boolean _x = false;
 	static final int minErrDist = 2;
+	private FrameDescriptor frameDescriptor;
 
 	public Token t;    // last recognized token
 	public Token la;   // lookahead token
@@ -48,7 +51,8 @@ public class Parser {
 	public Parser(Scanner scanner) {
 		this.scanner = scanner;
 		errors = new Errors();
-		astGenerator = new CoconutASTGenerator();
+		frameDescriptor = new FrameDescriptor();
+		astGenerator = new CoconutASTGenerator(frameDescriptor);
 	}
 
 	void SynErr (int n) {

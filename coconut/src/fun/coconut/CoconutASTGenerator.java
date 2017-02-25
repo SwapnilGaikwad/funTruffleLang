@@ -24,8 +24,8 @@ public class CoconutASTGenerator {
 	FrameDescriptor frameDescriptor;
 	List<CoconutExpressionNode> instructionList;
 
-	public CoconutASTGenerator(){
-		frameDescriptor = new FrameDescriptor();
+	public CoconutASTGenerator(FrameDescriptor frameDescriptor){
+		frameDescriptor = this.frameDescriptor;
 		instructionList = new ArrayList<>();
 	}
 
