@@ -25,7 +25,7 @@ PRODUCTIONS
    = value <out n1>
      {
        op <out str> {
-	       floatValue <out n3>	(. astGenerator.createBinaryInstruction(str, n1, (int) n3); .)
+	       floatValue <out n3>	(. astGenerator.createBinaryInstruction(str, n1, n3); .)
 	       |
 	       value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
 	    }

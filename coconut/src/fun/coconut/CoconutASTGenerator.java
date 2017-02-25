@@ -16,6 +16,7 @@ import fun.coconut.nodes.arithmetic.CoconutModNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutMulNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutRShiftNodeGen;
 import fun.coconut.nodes.arithmetic.CoconutSubNodeGen;
+import fun.coconut.nodes.literals.CoconutFloat32NodeGen;
 import fun.coconut.nodes.literals.CoconutInt32NodeGen;
 
 public class CoconutASTGenerator {
@@ -33,6 +34,40 @@ public class CoconutASTGenerator {
 		CoconutExpressionNode result = null;
 		CoconutExpressionNode lhsNode = CoconutInt32NodeGen.create(lhs);
 		CoconutExpressionNode rhsNode = CoconutInt32NodeGen.create(rhs);
+		switch (operator) {
+		case "+" :
+			result = CoconutAddNodeGen.create(lhsNode, rhsNode);
+			break;
+		case "-" :
+			result = CoconutSubNodeGen.create(lhsNode, rhsNode);
+			break;
+		case "/" :
+			result = CoconutDivNodeGen.create(lhsNode, rhsNode);
+			break;
+		case "*" :
+			result = CoconutMulNodeGen.create(lhsNode, rhsNode);
+			break;
+		case "%" :
+			result = CoconutModNodeGen.create(lhsNode, rhsNode);
+			break;
+		case "<<":
+			result = CoconutLShiftNodeGen.create(lhsNode, rhsNode);
+			break;
+		case ">>":
+			result = CoconutRShiftNodeGen.create(lhsNode, rhsNode);
+			break;
+		default :
+			result = new CoconutUnimplementedOperationNode();
+			break;
+		}
+		instructionList.add(result);
+	}
+
+	public void createBinaryInstruction(String operator, int lhs, float rhs){
+		System.out.println("Create instruction: " + lhs + " '" + operator + "' " + rhs);
+		CoconutExpressionNode result = null;
+		CoconutExpressionNode lhsNode = CoconutInt32NodeGen.create(lhs);
+		CoconutExpressionNode rhsNode = CoconutFloat32NodeGen.create(rhs);
 		switch (operator) {
 		case "+" :
 			result = CoconutAddNodeGen.create(lhsNode, rhsNode);

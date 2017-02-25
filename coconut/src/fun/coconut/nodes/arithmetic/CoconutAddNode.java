@@ -14,4 +14,10 @@ public abstract class CoconutAddNode extends CoconutExpressionNode {
 		System.out.println("Adding " + left + " + " + right);
 		return left + right;
 	}
+
+	@Specialization
+	public float addFloat(int left, float right){
+		System.out.println("Adding " + left + " + " + right);
+		return left + right;
+	}
 }
