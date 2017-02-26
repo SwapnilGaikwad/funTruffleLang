@@ -27,6 +27,7 @@ Coco/R itself) does not fall under the GNU General Public License.
 ------------------------------------------------------------------------*/
 -->begin
 import fun.coconut.nodes.CoconutRootNode;
+import fun.coconut.nodes.CoconutExpressionNode;
 import fun.coconut.CoconutASTGenerator;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;

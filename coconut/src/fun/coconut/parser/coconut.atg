@@ -21,14 +21,10 @@ PRODUCTIONS
        instr ";"
      }.
 
-   instr			(. int n1, n2; float n3; String str; .)
+   instr			(. CoconutExpressionNode n1, n2; String str; .)
    = value <out n1>
      {
-       op <out str> {
-	       floatValue <out n3>	(. astGenerator.createBinaryInstruction(str, astGenerator.createNode(n1), astGenerator.createNode(n3)); .)
-	       |
-	       value <out n2>	(. astGenerator.createBinaryInstruction(str, astGenerator.createNode(n1), astGenerator.createNode(n2)); .)
-	    }
+       op <out str> value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
      }.
 
    op <out String o>	(. o = null; .)
@@ -43,7 +39,12 @@ PRODUCTIONS
    = ( "<<" | ">>" )		(. o = t.val; .)
    .
 
-   value <out int n>   (. n = 0; .)
+   value <out CoconutExpressionNode node>	(. node = null; int n1; float n2; .)
+   = intValue <out n1>				(. node = astGenerator.createNode(n1); .)
+   | floatValue <out n2>			(. node = astGenerator.createNode(n2);.)
+   .
+
+   intValue <out int n>   (. n = 0; .)
    = ['+'] number      (. n = Integer.parseInt(t.val); .)
     | '-' number       (. n = Integer.parseInt(t.val) * -1; .)
     .
