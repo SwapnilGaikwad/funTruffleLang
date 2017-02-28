@@ -11,7 +11,25 @@ public abstract class CoconutMulNode extends CoconutExpressionNode {
 
 	@Specialization
 	public int mulInt(int left, int right){
-		System.out.println("Adding " + left + " * " + right);
+		System.out.println("Multiplying " + left + " * " + right);
 		return left * right;
+	}
+
+	@Specialization
+	public float mulInt(float left, int right){
+		System.out.println("Multiplying " + left + " * " + right);
+		return left * right;
+	}
+
+	@Specialization
+	public float mulInt(int left, float right){
+		System.out.println("Multiplying " + left + " * " + right);
+		return (float)left * right;
+	}
+
+	@Specialization
+	public float mulInt(float left, float right){
+		System.out.println("Multiplying" + left + " * " + right);
+		return left * (float)right;
 	}
 }
