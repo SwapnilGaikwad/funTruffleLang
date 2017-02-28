@@ -11,7 +11,25 @@ public abstract class CoconutModNode extends CoconutExpressionNode {
 
 	@Specialization
 	public int modInt(int left, int right){
-		System.out.println("Adding " + left + " % " + right);
+		System.out.println("Modulus " + left + " % " + right);
+		return left % right;
+	}
+
+	@Specialization
+	public float modInt(float left, int right){
+		System.out.println("Modulus " + left + " % " + right);
+		return left % right;
+	}
+
+	@Specialization
+	public float modInt(int left, float right){
+		System.out.println("Modulus " + left + " % " + right);
+		return left % right;
+	}
+
+	@Specialization
+	public float modInt(float left, float right){
+		System.out.println("Modulus " + left + " % " + right);
 		return left % right;
 	}
 }
