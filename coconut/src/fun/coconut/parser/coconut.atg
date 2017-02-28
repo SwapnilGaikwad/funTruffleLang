@@ -39,18 +39,21 @@ PRODUCTIONS
    = ( "<<" | ">>" )		(. o = t.val; .)
    .
 
-   value <out CoconutExpressionNode node>	(. node = null; int n1; float n2; .)
+   value <out CoconutExpressionNode node>	(. node = null; CoconutExpressionNode n1 = null; .)
+   = ['+'] unsignedValue <out node>	
+   | '-' unsignedValue <out n1>			(. node = CoconutMulNodeGen.create(n1, astGenerator.createNode(-1));.)
+   .
+
+   unsignedValue <out CoconutExpressionNode node>	(. node = null; int n1; float n2; .)
    = intValue <out n1>				(. node = astGenerator.createNode(n1); .)
    | floatValue <out n2>			(. node = astGenerator.createNode(n2);.)
    .
 
    intValue <out int n>   (. n = 0; .)
-   = ['+'] number      (. n = Integer.parseInt(t.val); .)
-    | '-' number       (. n = Integer.parseInt(t.val) * -1; .)
+   = number      (. n = Integer.parseInt(t.val); .)
     .
 
     floatValue <out float n>	(. n = 0.0f; .)
-    = ['+'] float		(. n = Float.parseFloat(t.val); .)
-      | '-' float		(. n = Float.parseFloat(t.val) * -1; .)
+    = float		(. n = Float.parseFloat(t.val); .)
     .
 END Coconut.
