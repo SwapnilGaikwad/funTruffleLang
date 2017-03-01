@@ -2,18 +2,23 @@ COMPILER Coconut
 
 CHARACTERS
     digit = '0'..'9'.
+    letter = 'a'..'z'+'A'..'Z'.
 
 TOKENS
     number = digit{digit}.
     float = digit{digit}'.'{digit}.
+    id = letter{letter|digit|'_'}.
 
 IGNORE "\n"
 PRODUCTIONS
    Coconut
-   = basicBlock
+   = "function" id 		(. System.out.println("Creating function '" + t.val +"'"); .)
+    "()" "{"
+     basicBlock
      {
         basicBlock
-     }.
+     }
+     "}".
 
    basicBlock
    = instr ";"
