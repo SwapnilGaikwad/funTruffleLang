@@ -3,6 +3,8 @@ package fun.coconut;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 
 import fun.coconut.nodes.CoconutBlockNode;
@@ -60,10 +62,10 @@ public class CoconutASTGenerator {
 		instructionList.add(result);
 	}
 
-	public CoconutRootNode generateAST(){
+	public CallTarget generateAST(){
 		CoconutExpressionNode node = new CoconutBlockNode(instructionList);
 		CoconutRootNode rootNode = new CoconutRootNode(Coconut.class, null, frameDescriptor, node);
-		return rootNode;
+		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
 
 	public CoconutExpressionNode createNode(float value) {
