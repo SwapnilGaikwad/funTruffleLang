@@ -11,14 +11,15 @@ TOKENS
 
 IGNORE "\n"
 PRODUCTIONS
-   Coconut
-   = "function" id 		(. System.out.println("Creating function '" + t.val +"'"); .)
+   Coconut				(. String functionName = null;.)
+   = "function" id 		(. System.out.println("Creating function '" + t.val +"'"); functionName = t.val; .)
     "()" "{"
      basicBlock
      {
         basicBlock
      }
-     "}".
+     "}"				(. astGenerator.createFunctionNode(functionName); .)
+     .
 
    basicBlock
    = instr ";"
