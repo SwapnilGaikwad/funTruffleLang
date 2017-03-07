@@ -12,7 +12,31 @@ public abstract class CoconutDivNode extends CoconutExpressionNode {
 
 	@Specialization
 	public int divInt(int left, int right){
-		System.out.println("Adding " + left + " / " + right);
+		System.out.println("Dividing " + left + " / " + right);
+		if (right == 0)
+			throw new CoconutUnsupportedOperationException("Divide by zero error");
+		return left / right;
+	}
+
+	@Specialization
+	public float divInt(float left, int right){
+		System.out.println("Dividing " + left + " / " + right);
+		if (right == 0)
+			throw new CoconutUnsupportedOperationException("Divide by zero error");
+		return left / right;
+	}
+
+	@Specialization
+	public float divInt(int left, float right){
+		System.out.println("Dividing " + left + " / " + right);
+		if (right == 0)
+			throw new CoconutUnsupportedOperationException("Divide by zero error");
+		return left / right;
+	}
+
+	@Specialization
+	public float divInt(float left, float right){
+		System.out.println("Dividing " + left + " / " + right);
 		if (right == 0)
 			throw new CoconutUnsupportedOperationException("Divide by zero error");
 		return left / right;
