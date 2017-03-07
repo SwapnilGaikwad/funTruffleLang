@@ -16,7 +16,7 @@ public abstract class CoconutExpressionNode extends Node {
 	}
 
 
-	public Object executeUnimplemented(VirtualFrame frame) {
-		throw new CoconutUnsupportedOperationException("Unsupported operation");
+	public Object executeUnimplemented(VirtualFrame frame, String message) {
+		throw new CoconutUnsupportedOperationException(message);
 	}
 }

@@ -1,7 +1,9 @@
 package fun.coconut;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
@@ -26,12 +28,12 @@ public class CoconutASTGenerator {
 
 	FrameDescriptor frameDescriptor;
 	List<CoconutExpressionNode> instructionList;
-	List<CoconutExpressionNode> functions;
+	Map<String, CoconutExpressionNode> functions;
 
 	public CoconutASTGenerator(FrameDescriptor frameDescriptor){
 		frameDescriptor = this.frameDescriptor;
 		instructionList = new ArrayList<>();
-		functions = new ArrayList<CoconutExpressionNode>();
+		functions = new HashMap<String, CoconutExpressionNode>();
 	}
 
 	public void createBinaryInstruction(String operator, CoconutExpressionNode lhsNode, CoconutExpressionNode rhsNode){
@@ -68,11 +70,14 @@ public class CoconutASTGenerator {
 	public void createFunctionNode(String functionName){
 		CoconutExpressionNode node = new CoconutBlockNode(instructionList);
 		CoconutFunctionNode functionNode = new CoconutFunctionNode(functionName, node);
-		functions.add(functionNode);
+		functions.put(functionName, functionNode);
 	}
 
 	public CallTarget generateAST(){
-		CoconutExpressionNode node = functions.get(0);
+		CoconutExpressionNode node = functions.get("main");
+		if(node == null){
+			node = new CoconutUnimplementedOperationNode(" A 'main' function not found!!!");
+		}
 		CoconutRootNode rootNode = new CoconutRootNode(Coconut.class, null, frameDescriptor, node);
 		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
