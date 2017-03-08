@@ -69,12 +69,13 @@ public class CoconutASTGenerator {
 
 	public void createFunctionNode(String functionName){
 		CoconutExpressionNode node = new CoconutBlockNode(instructionList);
+		instructionList = new ArrayList<CoconutExpressionNode>();
 		CoconutFunctionNode functionNode = new CoconutFunctionNode(functionName, node);
 		functions.put(functionName, functionNode);
 	}
 
 	public CallTarget generateAST(){
-		CoconutExpressionNode node = functions.get("main");
+		CoconutExpressionNode node = functions.get("fun");
 		if(node == null){
 			node = new CoconutUnimplementedOperationNode(" A 'main' function not found!!!");
 		}

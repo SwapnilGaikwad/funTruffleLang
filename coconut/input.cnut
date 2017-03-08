@@ -13,3 +13,8 @@ function main() {
 4.4 % 2.3;
 -4.4 % -2.3;
 }
+
+function fun() {
+
+  5 + 9;
+}
