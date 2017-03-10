@@ -1,5 +1,5 @@
 ### Coconut
-Test langugage implementation using Truffle for experimentation.
+Test language implementation using Truffle for experimentation.
 
 ### Building
 ```

@@ -15,6 +15,7 @@ function main() {
 }
 
 function fun() {
-
+  3 + 2;
+  a;
   5 + 9;
 }
