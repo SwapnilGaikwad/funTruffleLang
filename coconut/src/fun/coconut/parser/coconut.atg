@@ -27,7 +27,7 @@ PRODUCTIONS
      "}"				(. astGenerator.createFunctionNode(functionName); .)
      .
 
-   basicBlock			(. String str; .)
+   basicBlock			(. FrameSlot str; .)
    = instr ";"
      {
        (instr | var<out str>) ";"
@@ -69,7 +69,9 @@ PRODUCTIONS
     = float		(. n = Float.parseFloat(t.val); .)
     .
 
-	var <out String n>			(. n = null; .)
-	= id						(. n = t.val; System.out.println("Variable '" + n + "' found"); .)
+	var <out FrameSlot slot>			(. slot = null; .)
+	= id						(. slot = astGenerator.createVariable(t.val); 
+								   System.out.println("Variable '" + t.val + "' found");
+								.)
 	.
 END Coconut.

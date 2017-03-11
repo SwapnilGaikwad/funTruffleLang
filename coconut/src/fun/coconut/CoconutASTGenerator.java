@@ -8,6 +8,7 @@ import java.util.Map;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.frame.FrameSlot;
 
 import fun.coconut.nodes.CoconutBlockNode;
 import fun.coconut.nodes.CoconutExpressionNode;
@@ -31,7 +32,7 @@ public class CoconutASTGenerator {
 	Map<String, CoconutExpressionNode> functions;
 
 	public CoconutASTGenerator(FrameDescriptor frameDescriptor){
-		frameDescriptor = this.frameDescriptor;
+		this.frameDescriptor = frameDescriptor;
 		instructionList = new ArrayList<>();
 		functions = new HashMap<String, CoconutExpressionNode>();
 	}
@@ -89,5 +90,9 @@ public class CoconutASTGenerator {
 
 	public CoconutExpressionNode createNode(int value) {
 		return CoconutInt32NodeGen.create(value);
+	}
+
+	public FrameSlot createVariable( String name) {
+		return frameDescriptor.findOrAddFrameSlot(name);
 	}
 }
