@@ -27,10 +27,10 @@ PRODUCTIONS
      "}"				(. astGenerator.createFunctionNode(functionName); .)
      .
 
-   basicBlock			(. FrameSlot str; .)
+   basicBlock
    = instr ";"
      {
-       (instr | var<out str>) ";"
+       (instr | varDecl) ";"
      }.
 
    instr			(. CoconutExpressionNode n1, n2; String str; .)
@@ -38,6 +38,11 @@ PRODUCTIONS
      {
        op <out str> value <out n2>	(. astGenerator.createBinaryInstruction(str, n1, n2); .)
      }.
+
+   varDecl								(.	FrameSlot slot = null; CoconutExpressionNode val = null; .)
+   =   "int" var <out slot> 			(.	slot.setKind(FrameSlotKind.Int); .)
+       [ "=" value <out val> ]
+   .
 
    op <out String o>	(. o = null; .)
    =  ( arithOp <out o> | shiftOp <out o> )
