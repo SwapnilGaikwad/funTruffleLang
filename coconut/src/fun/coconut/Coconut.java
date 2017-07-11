@@ -55,7 +55,7 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 
 	@Override
 	protected Object evalInContext(Source source, Node node,
-			MaterializedFrame mFrame) throws Exception {
+			MaterializedFrame mFrame) {
 		System.out.println("In evalInContext");
 		return null;
 	}
