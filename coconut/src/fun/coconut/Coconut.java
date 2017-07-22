@@ -22,9 +22,7 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 
 	public static final String MIME_TYPE = "application/x-coconut";
 
-	public static final Coconut INSTANCE = new Coconut();
-
-	private Coconut() {
+	public Coconut() {
 		//No instance apart from singleton INSTANCE
 	}
 
@@ -66,7 +64,7 @@ public class Coconut extends TruffleLanguage<CoconutContext>{
 		System.out.println("In parse method...");
 		Scanner scanner = new Scanner(code.getInputStream());
 		Parser parser = new Parser(scanner);
-		return parser.Parse();
+		return parser.Parse(this);
 	}
 
 	public static void main(String[] args) {

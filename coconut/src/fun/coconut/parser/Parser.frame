@@ -30,6 +30,7 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 
+import fun.coconut.Coconut;
 import fun.coconut.CoconutASTGenerator;
 import fun.coconut.nodes.CoconutExpressionNode;
 import fun.coconut.nodes.arithmetic.CoconutMulNodeGen;
@@ -115,12 +116,12 @@ public class Parser {
 	
 -->productions
 
-	public CallTarget Parse() {
+	public CallTarget Parse(Coconut coconut) {
 		la = new Token();
 		la.val = "";		
 		Get();
 -->parseRoot
-		return astGenerator.generateAST();
+		return astGenerator.generateAST(coconut);
 	}
 
 	private static final boolean[][] set = {

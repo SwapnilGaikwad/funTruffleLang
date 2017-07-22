@@ -75,12 +75,12 @@ public class CoconutASTGenerator {
 		functions.put(functionName, functionNode);
 	}
 
-	public CallTarget generateAST(){
+	public CallTarget generateAST(Coconut coconut){
 		CoconutExpressionNode node = functions.get("fun");
 		if(node == null){
 			node = new CoconutUnimplementedOperationNode(" A 'main' function not found!!!");
 		}
-		CoconutRootNode rootNode = new CoconutRootNode(Coconut.class, null, frameDescriptor, node);
+		CoconutRootNode rootNode = new CoconutRootNode(coconut, frameDescriptor, node);
 		return Truffle.getRuntime().createCallTarget(rootNode);
 	}
 
