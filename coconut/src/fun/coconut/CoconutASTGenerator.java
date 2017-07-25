@@ -76,7 +76,7 @@ public class CoconutASTGenerator {
 	}
 
 	public CallTarget generateAST(Coconut coconut){
-		CoconutExpressionNode node = functions.get("fun");
+		CoconutExpressionNode node = functions.get("main");
 		if(node == null){
 			node = new CoconutUnimplementedOperationNode(" A 'main' function not found!!!");
 		}
