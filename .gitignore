@@ -15,3 +15,7 @@ build/
 .gradle/
 /.nb-gradle/
 src/main/generated
+*.class
+.project
+.classpath
+.settings/
