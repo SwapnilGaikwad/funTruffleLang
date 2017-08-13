@@ -6,19 +6,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Driver {
+public class SimpleBFParser {
 
-	public static void main(String[] args) {
+	public char[] parse(String inputFile) {
 
-		if(args.length < 1 ){
-			System.out.println("Please pass the input file");
-			return;
-		}
-	
-		File input = new File(args[0]);
+		File input = new File(inputFile);
 		if(!input.isFile()){
-			System.out.println("Given file '" + args[0] + "' not a valid file");
-			return;
+			System.out.println("Given file '" + inputFile + "' not a valid file");
+			throw new IllegalStateException();
 		}
 
 		StringBuilder program = new StringBuilder();
@@ -29,12 +24,10 @@ public class Driver {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			return;
+			throw new IllegalStateException();
 		}
 
-		SimpleBF bf = new SimpleBF();
-		bf.setProgram(program.toString().toCharArray());
-		bf.execute();
+		return program.toString().toCharArray();
 	}
 
 }

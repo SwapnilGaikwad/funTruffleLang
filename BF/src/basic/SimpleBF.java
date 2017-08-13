@@ -74,4 +74,19 @@ public class SimpleBF {
 			programCounter++;
 		}
 	}
+
+	public static void main(String[] args) {
+
+		if(args.length < 1 ){
+			System.out.println("Please pass the input file");
+			return;
+		}
+	
+		SimpleBFParser parser = new SimpleBFParser();
+		char[] parseResult = parser.parse(args[0]);
+		SimpleBF bf = new SimpleBF();
+		bf.setProgram(parseResult);
+		bf.execute();
+	}
+
 }
