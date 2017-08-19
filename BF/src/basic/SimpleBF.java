@@ -2,6 +2,10 @@ package basic;
 
 import java.util.Scanner;
 
+import basic.SimpleBFParser.Loop;
+import basic.SimpleBFParser.OpCode;
+import basic.SimpleBFParser.Operation;
+
 public class SimpleBF {
 
 	private int memoryCounter;

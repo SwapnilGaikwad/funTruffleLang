@@ -37,46 +37,46 @@ public class SimpleBFParser {
 		try {
 			Operation operation = null;
 			outer:
-			while((ch = br.read()) != -1){
-				switch(ch) {
-				case '+':	operation = new Operation();
-							operation.setCode(OpCode.INC_MEM);
-							break;
+				while((ch = br.read()) != -1){
+					switch(ch) {
+					case '+':	operation = new Operation();
+					operation.setCode(OpCode.INC_MEM);
+					break;
 
-				case '-':	operation = new Operation();
-							operation.setCode(OpCode.DEC_MEM);
-							break;
+					case '-':	operation = new Operation();
+					operation.setCode(OpCode.DEC_MEM);
+					break;
 
-				case '<':	operation = new Operation();
-							operation.setCode(OpCode.MOVE_LEFT);
-							break;
+					case '<':	operation = new Operation();
+					operation.setCode(OpCode.MOVE_LEFT);
+					break;
 
-				case '>':	operation = new Operation();
-							operation.setCode(OpCode.MOVE_RIGHT);
-							break;
+					case '>':	operation = new Operation();
+					operation.setCode(OpCode.MOVE_RIGHT);
+					break;
 
-				case '.':	operation = new Operation();
-							operation.setCode(OpCode.PRINT_MEM);
-							break;
+					case '.':	operation = new Operation();
+					operation.setCode(OpCode.PRINT_MEM);
+					break;
 
-				case ',':	operation = new Operation();
-							operation.setCode(OpCode.READ_MEM);
-							break;
+					case ',':	operation = new Operation();
+					operation.setCode(OpCode.READ_MEM);
+					break;
 
-				case '[':	Loop loop= new Loop();
-							loop.setOperations(parseStream((br)));
-							operation = loop;
-							operation.setCode(OpCode.LOOP_START);
-							break;
+					case '[':	Loop loop= new Loop();
+					loop.setOperations(parseStream((br)));
+					operation = loop;
+					operation.setCode(OpCode.LOOP_START);
+					break;
 
-				case ']':	break outer;
+					case ']':	break outer;
 
-				default:
-							System.out.println("Unknown operator : '" + ch + "'");
-							break;
+					default:
+						System.out.println("Unknown operator : '" + ch + "'");
+						break;
+					}
+					operations.add(operation);
 				}
-				operations.add(operation);
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalStateException();
@@ -85,43 +85,43 @@ public class SimpleBFParser {
 		Operation[] ops = new Operation[operations.size()];
 		return operations.toArray(ops);
 	}
-}
 
-enum OpCode{
-	MOVE_LEFT,
-	MOVE_RIGHT,
-	INC_MEM,
-	DEC_MEM,
-	LOOP_START,
-	LOOP_END,
-	PRINT_MEM,
-	READ_MEM
-}
-
-class Operation {
-
-	private OpCode code;
-
-	public OpCode getCode() {
-		return code;
-	}
-	public void setCode(OpCode code) {
-		this.code = code;
+	public enum OpCode{
+		MOVE_LEFT,
+		MOVE_RIGHT,
+		INC_MEM,
+		DEC_MEM,
+		LOOP_START,
+		LOOP_END,
+		PRINT_MEM,
+		READ_MEM
 	}
 
-	public String toString(){
-		return code.name();
+	public class Operation {
+
+		private OpCode code;
+
+		public OpCode getCode() {
+			return code;
+		}
+		public void setCode(OpCode code) {
+			this.code = code;
+		}
+
+		public String toString(){
+			return code.name();
+		}
 	}
-}
 
-class Loop extends Operation {
-	private Operation[] operations;
+	public class Loop extends Operation {
+		private Operation[] operations;
 
-	public Operation[] getOperations() {
-		return operations;
-	}
+		public Operation[] getOperations() {
+			return operations;
+		}
 
-	public void setOperations(Operation[] operations) {
-		this.operations = operations;
+		public void setOperations(Operation[] operations) {
+			this.operations = operations;
+		}
 	}
 }
