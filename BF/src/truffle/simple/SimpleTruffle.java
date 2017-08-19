@@ -1,7 +1,5 @@
 package truffle.simple;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import basic.SimpleBFParser;
@@ -26,15 +24,17 @@ public class SimpleTruffle {
 	}
 
 	private BFNode[] prepareNodes(Operation[] operations) {
-		List<BFNode> nodeList = new ArrayList<>();
-		for(Operation op : operations) {
-			if (op instanceof Loop) {
-				nodeList.add(new BFNode(OpCode.LOOP_START, prepareNodes(((Loop) op).getOperations())));
+		BFNode[] opNodes = new BFNode[operations.length];
+		for(int i = 0; i < operations.length; i++) {
+			if (operations[i] instanceof Loop) {
+				opNodes[i] = new BFNode(OpCode.LOOP_START, prepareNodes(((Loop) operations[i]).getOperations()));
+				continue;
 			}
-			nodeList.add(new BFNode(op.getCode(), null));
+			opNodes[i] = new BFNode(operations[i].getCode(), null);
 		}
-		return nodeList.toArray(new BFNode[0]);
+		return opNodes;
 	}
+
 	public void runAST() {
 		callTarget.call();
 	}
