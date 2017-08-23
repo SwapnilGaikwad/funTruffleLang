@@ -1,6 +1,6 @@
 package common;
 
-import simple.SimpleBFParser.Operation;
+import common.SimpleBFParser.Operation;
 
 public interface SimpleBFImpl {
 

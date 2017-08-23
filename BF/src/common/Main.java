@@ -1,8 +1,8 @@
 package common;
 
+import common.SimpleBFParser.Operation;
+
 import simple.SimpleBF;
-import simple.SimpleBFParser;
-import simple.SimpleBFParser.Operation;
 import truffle.simple.SimpleTruffleBF;
 
 public class Main {
@@ -25,12 +25,20 @@ public class Main {
 			System.out.println("Please pass the input file");
 			return;
 		}
-	
+
 		//Parse the input
 		executor.parse(args[0]);
 
-		//SimpleBFImpl bf = new SimpleBF();
-		SimpleBFImpl bf = new SimpleTruffleBF();
+		SimpleBFImpl bf = null;
+		String BF = "" + System.getProperty("BF");
+		switch(BF) {
+		case "1" :
+			bf = new SimpleBF();
+			break;
+
+		default:
+			bf = new SimpleTruffleBF();
+		}
 		executor.execute(bf);
 	}
 

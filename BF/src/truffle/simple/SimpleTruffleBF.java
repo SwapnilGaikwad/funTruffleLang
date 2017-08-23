@@ -2,17 +2,17 @@ package truffle.simple;
 
 import java.util.Scanner;
 
-import simple.SimpleBFParser.Loop;
-import simple.SimpleBFParser.OpCode;
-import simple.SimpleBFParser.Operation;
-
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RootNode;
+
 import common.SimpleBFImpl;
+import common.SimpleBFParser.Loop;
+import common.SimpleBFParser.OpCode;
+import common.SimpleBFParser.Operation;
 
 public class SimpleTruffleBF implements SimpleBFImpl {
 

@@ -3,10 +3,9 @@ package simple;
 import java.util.Scanner;
 
 import common.SimpleBFImpl;
-
-import simple.SimpleBFParser.Loop;
-import simple.SimpleBFParser.OpCode;
-import simple.SimpleBFParser.Operation;
+import common.SimpleBFParser.Loop;
+import common.SimpleBFParser.OpCode;
+import common.SimpleBFParser.Operation;
 
 public class SimpleBF implements SimpleBFImpl {
 

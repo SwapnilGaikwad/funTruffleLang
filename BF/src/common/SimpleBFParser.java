@@ -1,4 +1,4 @@
-package simple;
+package common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SimpleBFParser {
+
+	private int count = 0;
 
 	public Operation[] parse(String inputFile) {
 
@@ -37,7 +39,8 @@ public class SimpleBFParser {
 		try {
 			Operation operation = null;
 			outer:
-				while((ch = br.read()) != -1){
+				while((ch = br.read()) != -1 && ch != 10){
+					count++;
 					switch(ch) {
 					case '+':	operation = new Operation();
 					operation.setCode(OpCode.INC_MEM);
@@ -72,7 +75,7 @@ public class SimpleBFParser {
 					case ']':	break outer;
 
 					default:
-						System.out.println("Unknown operator : '" + ch + "'");
+						System.out.println("Unknown operator : '" + ch + "' at position: " + count);
 						break;
 					}
 					operations.add(operation);
