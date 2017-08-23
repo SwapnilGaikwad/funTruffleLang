@@ -1,19 +1,33 @@
-package basic;
+package simple;
 
 import java.util.Scanner;
 
-import basic.SimpleBFParser.Loop;
-import basic.SimpleBFParser.OpCode;
-import basic.SimpleBFParser.Operation;
+import common.SimpleBFImpl;
 
-public class SimpleBF {
+import simple.SimpleBFParser.Loop;
+import simple.SimpleBFParser.OpCode;
+import simple.SimpleBFParser.Operation;
+
+public class SimpleBF implements SimpleBFImpl {
 
 	private int memoryCounter;
 	private char[] memory;
+	private Operation[] operations;
 
 	public SimpleBF() {
 		memoryCounter = 0;
 		memory= new char[1024];	//1k memory
+	}
+
+	@Override
+	public void prepareAST(Operation[] parseResult) {
+		this.operations = parseResult;
+	}
+
+	@Override
+	public void runAST() {
+		execute(operations);
+		
 	}
 
 	public void execute(Operation[] operations) {
@@ -52,18 +66,4 @@ public class SimpleBF {
 			}
 		}
 	}
-
-	public static void main(String[] args) {
-
-		if(args.length < 1 ){
-			System.out.println("Please pass the input file");
-			return;
-		}
-	
-		SimpleBFParser parser = new SimpleBFParser();
-		Operation[] parseResult = parser.parse(args[0]);
-		SimpleBF bf = new SimpleBF();
-		bf.execute(parseResult);
-	}
-
 }

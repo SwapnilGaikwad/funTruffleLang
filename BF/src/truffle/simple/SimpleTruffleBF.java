@@ -2,10 +2,9 @@ package truffle.simple;
 
 import java.util.Scanner;
 
-import basic.SimpleBFParser;
-import basic.SimpleBFParser.Loop;
-import basic.SimpleBFParser.OpCode;
-import basic.SimpleBFParser.Operation;
+import simple.SimpleBFParser.Loop;
+import simple.SimpleBFParser.OpCode;
+import simple.SimpleBFParser.Operation;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
@@ -13,8 +12,9 @@ import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RootNode;
+import common.SimpleBFImpl;
 
-public class SimpleTruffle {
+public class SimpleTruffleBF implements SimpleBFImpl {
 
 	private CallTarget callTarget;
 
@@ -37,20 +37,6 @@ public class SimpleTruffle {
 
 	public void runAST() {
 		callTarget.call();
-	}
-
-	public static void main(String[] args) {
-		if(args.length < 1 ){
-			System.out.println("Please pass the input file");
-			return;
-		}
-	
-		SimpleBFParser parser = new SimpleBFParser();
-		Operation[] parseResult = parser.parse(args[0]);
-
-		SimpleTruffle simpleTruffle = new SimpleTruffle();
-		simpleTruffle.prepareAST(parseResult);
-		simpleTruffle.runAST();
 	}
 }
 
