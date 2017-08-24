@@ -3,12 +3,13 @@ package truffle.simple;
 import java.util.Scanner;
 
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RootNode;
-
 import common.SimpleBFImpl;
 import common.SimpleBFParser.Loop;
 import common.SimpleBFParser.OpCode;
@@ -89,16 +90,15 @@ class BFNode extends Node {
 		case DEC_MEM: memory.cells[memory.position]--;
 			break;
 
-		case PRINT_MEM: System.out.print((char)memory.cells[memory.position]);
+		case PRINT_MEM: printValue(memory.cells[memory.position]);
 			break;
 
-		case READ_MEM:	Scanner scanner = new Scanner(System.in);
-						memory.cells[memory.position] = scanner.next().charAt(0);
+		case READ_MEM:	memory.cells[memory.position] = readValue();
 			break;
 
 		case LOOP_START: while(memory.cells[memory.position] > 0){
 				executeChildren(memory);
-			}
+				}
 			break;
 
 		case LOOP_END:
@@ -106,6 +106,18 @@ class BFNode extends Node {
 		}
 	}
 
+	@CompilerDirectives.TruffleBoundary
+	private int readValue() {
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		return scanner.next().charAt(0);
+	}
+	@CompilerDirectives.TruffleBoundary
+	private void printValue(int value) {
+		System.out.print((char) value);
+	}
+
+	@ExplodeLoop
 	private void executeChildren(Memory memory) {
 		for(BFNode child : children) {
 			child.execute(memory);
