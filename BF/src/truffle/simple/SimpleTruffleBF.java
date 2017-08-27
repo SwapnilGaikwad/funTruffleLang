@@ -11,7 +11,9 @@ import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
+import com.oracle.truffle.api.nodes.LoopNode;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.nodes.RepeatingNode;
 import com.oracle.truffle.api.nodes.RootNode;
 
 import common.SimpleBFImpl;
@@ -76,30 +78,59 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		}
 	}
 
-	class BFNode extends Node {
+	private class BFNode extends Node {
 
 		private OpCode opCode;
 		@Children private final BFNode[] children;
 
+		@Child private LoopNode loopNode;
+
 		public BFNode(OpCode opCode, BFNode[] children){
 			this.opCode = opCode;
 			this.children = children;
+			if(opCode == OpCode.LOOP_START) {
+				loopNode = Truffle.getRuntime().createLoopNode(new BFLoopNode());
+			}
+		}
+
+		private class BFLoopNode extends Node implements RepeatingNode {
+
+			@Override
+			@ExplodeLoop
+			public boolean executeRepeating(VirtualFrame frame) {
+				try {
+					int[] cells = getCells(frame);
+					int position = getPosition(frame);
+
+					if(cells[position] > 0 ){
+						for(BFNode child : children){
+							child.execute(frame);
+						}
+						return true;
+					}
+				} catch (FrameSlotTypeException e) {
+					CompilerDirectives.transferToInterpreter();
+					e.printStackTrace();
+				}
+				return false;
+			}
+
 		}
 
 		public void execute(VirtualFrame frame) {
 			int position;
 			try {
-				position = frame.getInt(cellPositionSlot);
+				position = getPosition(frame);
 
-				int[] cells = (int[])frame.getObject(cellSlot);
+				int[] cells = getCells(frame);
 
 				switch(opCode) {
 				case MOVE_RIGHT: position++;
-				frame.setInt(cellPositionSlot, position);
+				setPosition(frame, position);
 				break;
 
 				case MOVE_LEFT: position--;
-				frame.setInt(cellPositionSlot, position);
+				setPosition(frame, position);
 				break;
 
 				case INC_MEM: cells[position]++;
@@ -114,10 +145,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				case READ_MEM:	cells[position] = readValue();
 				break;
 
-				case LOOP_START: while(cells[position] > 0){
-					executeChildren(frame);
-					position = frame.getInt(cellPositionSlot);
-				}
+				case LOOP_START: loopNode.executeLoop(frame);
 				break;
 
 				case LOOP_END:
@@ -129,23 +157,33 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 			}
 		}
 
+		private int getPosition(VirtualFrame frame)
+				throws FrameSlotTypeException {
+			return frame.getInt(cellPositionSlot);
+		}
+
+		private int[] getCells(VirtualFrame frame)
+				throws FrameSlotTypeException {
+			return (int[])frame.getObject(cellSlot);
+		}
+
+		private void setPosition(VirtualFrame frame, int position) {
+			frame.setInt(cellPositionSlot, position);
+		}
+
 		@CompilerDirectives.TruffleBoundary
 		private int readValue() {
-			@SuppressWarnings("resource")
-			Scanner scanner = new Scanner(System.in);
-			return scanner.next().charAt(0);
+			try(Scanner scanner = new Scanner(System.in)){
+				return scanner.next().charAt(0);
+			} catch (Exception e) {
+				CompilerDirectives.transferToInterpreter();
+				throw new RuntimeException();
+			}
 		}
 
 		@CompilerDirectives.TruffleBoundary
 		private void printValue(int value) {
 			System.out.print((char) value);
-		}
-
-		@ExplodeLoop
-		private void executeChildren(VirtualFrame frame) {
-			for(BFNode child : children) {
-				child.execute(frame);
-			}
 		}
 	}
 }
