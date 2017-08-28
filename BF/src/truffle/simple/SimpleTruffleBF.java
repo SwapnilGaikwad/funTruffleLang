@@ -15,6 +15,7 @@ import com.oracle.truffle.api.nodes.LoopNode;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RepeatingNode;
 import com.oracle.truffle.api.nodes.RootNode;
+import com.oracle.truffle.api.profiles.IntValueProfile;
 
 import common.SimpleBFImpl;
 import common.SimpleBFParser.Loop;
@@ -126,6 +127,8 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 
 		@Child private LoopNode loopNode;
 
+		private final IntValueProfile profile = IntValueProfile.createIdentityProfile();
+
 		public BFNode(OpCode opCode, BFNode[] children){
 			this.opCode = opCode;
 			this.children = children;
@@ -134,7 +137,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		public void execute(VirtualFrame frame) {
 			int position;
 			try {
-				position = getPosition(frame);
+				position = profile.profile(getPosition(frame));
 
 				int[] cells = getCells(frame);
 
