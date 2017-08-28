@@ -38,7 +38,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		BFNode[] opNodes = new BFNode[operations.length];
 		for(int i = 0; i < operations.length; i++) {
 			if (operations[i] instanceof Loop) {
-				opNodes[i] = new BFNode(OpCode.LOOP_START, prepareNodes(((Loop) operations[i]).getOperations()));
+				opNodes[i] = new BFLoopNode(OpCode.LOOP_START, prepareNodes(((Loop) operations[i]).getOperations()));
 				continue;
 			}
 			opNodes[i] = new BFNode(operations[i].getCode(), null);
@@ -78,43 +78,57 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		}
 	}
 
-	private class BFNode extends Node {
+	class BFRepeatingNode extends BFNode implements RepeatingNode {
 
-		private OpCode opCode;
-		@Children private final BFNode[] children;
+		public BFRepeatingNode(OpCode opCode, BFNode[] children) {
+			super(opCode, children);
+		}
+
+		@Override
+		@ExplodeLoop
+		public boolean executeRepeating(VirtualFrame frame) {
+			try {
+				int[] cells = (int []) frame.getObject(cellSlot);
+				int position = frame.getInt(cellPositionSlot);
+
+				if(cells[position] > 0 ){
+					for(BFNode child : children){
+						child.execute(frame);
+					}
+					return true;
+				}
+			} catch (FrameSlotTypeException e) {
+				CompilerDirectives.transferToInterpreter();
+				e.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	class BFLoopNode extends BFNode {
+
+		@Child LoopNode loopNode;
+
+		public BFLoopNode(OpCode opCode, BFNode[] children) {
+			super(opCode, children);
+			loopNode = Truffle.getRuntime().createLoopNode(new BFRepeatingNode(opCode, children));
+		}
+
+		public void execute(VirtualFrame frame){
+			loopNode.executeLoop(frame);
+		}
+	}
+
+	class BFNode extends Node {
+
+		protected OpCode opCode;
+		@Children protected final BFNode[] children;
 
 		@Child private LoopNode loopNode;
 
 		public BFNode(OpCode opCode, BFNode[] children){
 			this.opCode = opCode;
 			this.children = children;
-			if(opCode == OpCode.LOOP_START) {
-				loopNode = Truffle.getRuntime().createLoopNode(new BFLoopNode());
-			}
-		}
-
-		private class BFLoopNode extends Node implements RepeatingNode {
-
-			@Override
-			@ExplodeLoop
-			public boolean executeRepeating(VirtualFrame frame) {
-				try {
-					int[] cells = getCells(frame);
-					int position = getPosition(frame);
-
-					if(cells[position] > 0 ){
-						for(BFNode child : children){
-							child.execute(frame);
-						}
-						return true;
-					}
-				} catch (FrameSlotTypeException e) {
-					CompilerDirectives.transferToInterpreter();
-					e.printStackTrace();
-				}
-				return false;
-			}
-
 		}
 
 		public void execute(VirtualFrame frame) {
@@ -145,11 +159,11 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				case READ_MEM:	cells[position] = readValue();
 				break;
 
-				case LOOP_START: loopNode.executeLoop(frame);
-				break;
-
 				case LOOP_END:
 					break;
+				default:
+					CompilerDirectives.transferToInterpreter();
+					throw new RuntimeException("Unexpected Operation type '" + opCode + "' in BFNode");
 				}
 			} catch (FrameSlotTypeException e) {
 				CompilerDirectives.transferToInterpreter();
