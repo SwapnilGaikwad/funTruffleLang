@@ -42,7 +42,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				opNodes[i] = new BFLoopNode(OpCode.LOOP_START, prepareNodes(((Loop) operations[i]).getOperations()));
 				continue;
 			}
-			opNodes[i] = new BFNode(operations[i].getCode(), null);
+			opNodes[i] = new BFOperationNode(operations[i].getCode(), null);
 		}
 		return opNodes;
 	}
@@ -79,7 +79,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		}
 	}
 
-	class BFRepeatingNode extends BFNode implements RepeatingNode {
+	class BFRepeatingNode extends BFOperationNode implements RepeatingNode {
 
 		public BFRepeatingNode(OpCode opCode, BFNode[] children) {
 			super(opCode, children);
@@ -106,7 +106,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		}
 	}
 
-	class BFLoopNode extends BFNode {
+	class BFLoopNode extends BFOperationNode {
 
 		@Child LoopNode loopNode;
 
@@ -120,7 +120,25 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		}
 	}
 
-	class BFNode extends Node {
+	abstract class BFNode extends Node {
+		protected int getPosition(VirtualFrame frame)
+				throws FrameSlotTypeException {
+			return frame.getInt(cellPositionSlot);
+		}
+
+		protected int[] getCells(VirtualFrame frame)
+				throws FrameSlotTypeException {
+			return (int[])frame.getObject(cellSlot);
+		}
+
+		protected void setPosition(VirtualFrame frame, int position) {
+			frame.setInt(cellPositionSlot, position);
+		}
+		
+		abstract public void execute(VirtualFrame frame);
+	}
+
+	class BFOperationNode extends BFNode {
 
 		protected OpCode opCode;
 		@Children protected final BFNode[] children;
@@ -129,7 +147,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 
 		private final IntValueProfile profile = IntValueProfile.createIdentityProfile();
 
-		public BFNode(OpCode opCode, BFNode[] children){
+		public BFOperationNode(OpCode opCode, BFNode[] children){
 			this.opCode = opCode;
 			this.children = children;
 		}
@@ -172,20 +190,6 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				CompilerDirectives.transferToInterpreter();
 				e.printStackTrace();
 			}
-		}
-
-		private int getPosition(VirtualFrame frame)
-				throws FrameSlotTypeException {
-			return frame.getInt(cellPositionSlot);
-		}
-
-		private int[] getCells(VirtualFrame frame)
-				throws FrameSlotTypeException {
-			return (int[])frame.getObject(cellSlot);
-		}
-
-		private void setPosition(VirtualFrame frame, int position) {
-			frame.setInt(cellPositionSlot, position);
 		}
 
 		@CompilerDirectives.TruffleBoundary
