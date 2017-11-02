@@ -38,16 +38,19 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 	private BFNode[] prepareNodes(Operation[] operations) {
 		BFNode[] opNodes = new BFNode[operations.length];
 		for(int i = 0; i < operations.length; i++) {
-			if (operations[i] instanceof Loop) {
+			switch(operations[i].getCode()) {
+			case LOOP_START:
 				opNodes[i] = new BFLoopNode(OpCode.LOOP_START, prepareNodes(((Loop) operations[i]).getOperations()));
-				continue;
-			}
-
-			if(operations[i].getCode() == OpCode.MOVE_LEFT) {
+				break;
+			case MOVE_LEFT:
 				opNodes[i] = new BFMoveLeftNode();
-				continue;
+				break;
+			case MOVE_RIGHT:
+				opNodes[i] = new BFMoveRightNode();
+				break;
+			default:
+				opNodes[i] = new BFOperationNode(operations[i].getCode(), null);
 			}
-			opNodes[i] = new BFOperationNode(operations[i].getCode(), null);
 		}
 		return opNodes;
 	}
@@ -165,10 +168,6 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				int[] cells = getCells(frame);
 
 				switch(opCode) {
-				case MOVE_RIGHT: position++;
-				setPosition(frame, position);
-				break;
-
 				case INC_MEM: cells[position]++;
 				break;
 
@@ -222,6 +221,20 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				e.printStackTrace();
 			}
 		}
-		
+	}
+
+	class BFMoveRightNode extends BFNode {
+
+		@Override
+		public void execute(VirtualFrame frame) {
+			try {
+				int position = getPosition(frame);
+				position++;
+				setPosition(frame, position);
+			} catch (FrameSlotTypeException e) {
+				CompilerDirectives.transferToInterpreter();
+				e.printStackTrace();
+			}
+		}
 	}
 }
