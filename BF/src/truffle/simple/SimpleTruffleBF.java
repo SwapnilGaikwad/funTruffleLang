@@ -15,7 +15,6 @@ import com.oracle.truffle.api.nodes.LoopNode;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RepeatingNode;
 import com.oracle.truffle.api.nodes.RootNode;
-import com.oracle.truffle.api.profiles.IntValueProfile;
 
 import common.SimpleBFImpl;
 import common.SimpleBFParser.Loop;
@@ -49,6 +48,22 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 
 			case MOVE_RIGHT:
 				opNodes[i] = new BFMoveRightNode();
+				break;
+
+			case INC_MEM:
+				opNodes[i] = new BFIncrementNode();
+				break;
+
+			case DEC_MEM:
+				opNodes[i] = new BFDecrementNode();
+				break;
+
+			case READ_MEM:
+				opNodes[i] = new BFReadMemNode();
+				break;
+
+			case LOOP_END:
+				opNodes[i] = new BFNoOpNode();
 				break;
 
 			case PRINT_MEM:
@@ -160,50 +175,14 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 
 		@Child private LoopNode loopNode;
 
-		private final IntValueProfile profile = IntValueProfile.createIdentityProfile();
-
 		public BFOperationNode(OpCode opCode, BFNode[] children){
 			this.opCode = opCode;
 			this.children = children;
 		}
 
 		public void execute(VirtualFrame frame) {
-			int position;
-			try {
-				position = profile.profile(getPosition(frame));
-
-				int[] cells = getCells(frame);
-
-				switch(opCode) {
-				case INC_MEM: cells[position]++;
-				break;
-
-				case DEC_MEM: cells[position]--;
-				break;
-
-				case READ_MEM:	cells[position] = readValue();
-				break;
-
-				case LOOP_END:
-					break;
-				default:
-					CompilerDirectives.transferToInterpreter();
-					throw new RuntimeException("Unexpected Operation type '" + opCode + "' in BFNode");
-				}
-			} catch (FrameSlotTypeException e) {
-				CompilerDirectives.transferToInterpreter();
-				e.printStackTrace();
-			}
-		}
-
-		@CompilerDirectives.TruffleBoundary
-		private int readValue() {
-			try(Scanner scanner = new Scanner(System.in)){
-				return scanner.next().charAt(0);
-			} catch (Exception e) {
-				CompilerDirectives.transferToInterpreter();
-				throw new RuntimeException();
-			}
+			CompilerDirectives.transferToInterpreter();
+			throw new RuntimeException("Unexpected Operation type '" + opCode + "' in BFNode");
 		}
 
 		@CompilerDirectives.TruffleBoundary
@@ -255,6 +234,62 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				CompilerDirectives.transferToInterpreter();
 				e.printStackTrace();
 			}
+		}
+	}
+
+	class BFIncrementNode extends BFNode {
+
+		@Override
+		public void execute(VirtualFrame frame) {
+			try {
+				int position = getPosition(frame);
+				int[] cells = getCells(frame);
+				cells[position]++;
+			} catch (FrameSlotTypeException e) {
+				CompilerDirectives.transferToInterpreter();
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class BFDecrementNode extends BFNode {
+
+		@Override
+		public void execute(VirtualFrame frame) {
+			try {
+				int position = getPosition(frame);
+				int[] cells = getCells(frame);
+				cells[position]--;
+			} catch (FrameSlotTypeException e) {
+				CompilerDirectives.transferToInterpreter();
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class BFReadMemNode extends BFNode {
+
+		@Override
+		@CompilerDirectives.TruffleBoundary
+		public void execute(VirtualFrame frame) {
+			try {
+				int position = getPosition(frame);
+				int[] cells = getCells(frame);
+				try(Scanner scanner = new Scanner(System.in)){
+					cells[position] = scanner.next().charAt(0);
+				}
+			} catch (FrameSlotTypeException e) {
+				CompilerDirectives.transferToInterpreter();
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class BFNoOpNode extends BFNode {
+
+		@Override
+		public void execute(VirtualFrame frame) {
+			//Perform no op
 		}
 	}
 }
