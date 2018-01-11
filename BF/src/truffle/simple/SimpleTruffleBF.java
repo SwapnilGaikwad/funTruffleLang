@@ -42,12 +42,19 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 			case LOOP_START:
 				opNodes[i] = new BFLoopNode(OpCode.LOOP_START, prepareNodes(((Loop) operations[i]).getOperations()));
 				break;
+
 			case MOVE_LEFT:
 				opNodes[i] = new BFMoveLeftNode();
 				break;
+
 			case MOVE_RIGHT:
 				opNodes[i] = new BFMoveRightNode();
 				break;
+
+			case PRINT_MEM:
+				opNodes[i] = new BFPrintNode();
+				break;
+
 			default:
 				opNodes[i] = new BFOperationNode(operations[i].getCode(), null);
 			}
@@ -174,9 +181,6 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				case DEC_MEM: cells[position]--;
 				break;
 
-				case PRINT_MEM: printValue(cells[position]);
-				break;
-
 				case READ_MEM:	cells[position] = readValue();
 				break;
 
@@ -231,6 +235,22 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 				int position = getPosition(frame);
 				position++;
 				setPosition(frame, position);
+			} catch (FrameSlotTypeException e) {
+				CompilerDirectives.transferToInterpreter();
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class BFPrintNode extends BFNode {
+
+		@Override
+		@CompilerDirectives.TruffleBoundary
+		public void execute(VirtualFrame frame) {
+			try {
+				int position = getPosition(frame);
+				int[] cells = getCells(frame);
+				System.out.print((char) cells[position]);
 			} catch (FrameSlotTypeException e) {
 				CompilerDirectives.transferToInterpreter();
 				e.printStackTrace();
