@@ -7,7 +7,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<truffle.version>0.27</truffle.version>
+		<truffle.version>0.32</truffle.version>
 	</properties>
 
 	<build>
