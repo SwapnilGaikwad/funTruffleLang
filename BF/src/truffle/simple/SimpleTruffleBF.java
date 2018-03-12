@@ -94,15 +94,18 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 
 		@Override
 		public Object execute(VirtualFrame frame) {
-			Memory memory = new Memory();
-			cellSlot = getFrameDescriptor().addFrameSlot(0, FrameSlotKind.Object);
-			cellPositionSlot = getFrameDescriptor().addFrameSlot(1, FrameSlotKind.Int);
-			frame.setObject(cellSlot, memory.cells);
-			frame.setInt(cellPositionSlot, memory.position);
+			Runnable task = ()-> {
+				Memory memory = new Memory();
+				cellSlot = getFrameDescriptor().addFrameSlot(0, FrameSlotKind.Object);
+				cellPositionSlot = getFrameDescriptor().addFrameSlot(1, FrameSlotKind.Int);
+				frame.setObject(cellSlot, memory.cells);
+				frame.setInt(cellPositionSlot, memory.position);
 
-			for(BFNode bfNode : bfNodes) {
-				bfNode.execute(frame);
-			}
+				for(BFNode bfNode : bfNodes) {
+					bfNode.execute(frame);
+				}
+			};
+			new Thread(task).start();
 			return null;
 		}
 	}
@@ -162,7 +165,7 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		protected void setPosition(VirtualFrame frame, int position) {
 			frame.setInt(cellPositionSlot, position);
 		}
-		
+
 		abstract public void execute(VirtualFrame frame);
 	}
 
