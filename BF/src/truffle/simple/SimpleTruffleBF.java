@@ -30,8 +30,6 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 	public void prepareAST(Operation[] parseResult) {
 		BFRootNode bfRootNode = new BFRootNode(prepareNodes(parseResult));
 		callTarget = Truffle.getRuntime().createCallTarget(bfRootNode);
-		cellSlot = bfRootNode.getFrameDescriptor().addFrameSlot(0, FrameSlotKind.Object);
-		cellPositionSlot = bfRootNode.getFrameDescriptor().addFrameSlot(1, FrameSlotKind.Int);
 	}
 
 	private BFNode[] prepareNodes(Operation[] operations) {
@@ -99,6 +97,8 @@ public class SimpleTruffleBF implements SimpleBFImpl {
 		@Override
 		public Object execute(VirtualFrame frame) {
 			Memory memory = new Memory();
+			cellSlot = getFrameDescriptor().addFrameSlot(0, FrameSlotKind.Object);
+			cellPositionSlot = getFrameDescriptor().addFrameSlot(1, FrameSlotKind.Int);
 			frame.setObject(cellSlot, memory.cells);
 			frame.setInt(cellPositionSlot, memory.position);
 
